@@ -1,0 +1,225 @@
+@import "tailwindcss";
+@source "../src";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+/*
+ * Design system definition.
+ *
+ * The @theme inline block maps CSS custom properties to Tailwind utility
+ * classes (e.g. --color-primary -> bg-primary, text-primary).
+ *
+ * The :root and .dark blocks define the actual color values using oklch.
+ * All colors MUST use oklch format.
+ *
+ * To add a new semantic color:
+ * 1. Add the variable to :root (light value) and .dark (dark value)
+ * 2. Register it in @theme inline as --color-<name>: var(--<name>)
+ */
+
+@theme inline {
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 8px);
+  --radius-3xl: calc(var(--radius) + 12px);
+  --radius-4xl: calc(var(--radius) + 16px);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-ring-offset-background: var(--background);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-kid-teal: var(--kid-teal);
+  --color-kid-coral: var(--kid-coral);
+  --color-kid-sun: var(--kid-sun);
+  --color-kid-sky: var(--kid-sky);
+  --color-kid-grape: var(--kid-grape);
+  --color-kid-mint: var(--kid-mint);
+  --font-arabic-display: "Amiri", "Noto Naskh Arabic", serif;
+  --font-arabic-body: "Cairo", "Noto Naskh Arabic", sans-serif;
+  --font-playful: "Fredoka", "Cairo", sans-serif;
+}
+
+:root {
+  --radius: 1.25rem;
+
+  /* Kid-friendly palette */
+  --kid-teal:  oklch(0.72 0.13 195);
+  --kid-coral: oklch(0.74 0.16 30);
+  --kid-sun:   oklch(0.86 0.16 90);
+  --kid-sky:   oklch(0.87 0.08 230);
+  --kid-grape: oklch(0.65 0.19 305);
+  --kid-mint:  oklch(0.87 0.11 155);
+
+  --background: oklch(0.985 0.02 90);
+  --foreground: oklch(0.24 0.06 275);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.24 0.06 275);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.24 0.06 275);
+  --primary: var(--kid-teal);
+  --primary-foreground: oklch(0.18 0.03 275);
+  --secondary: var(--kid-coral);
+  --secondary-foreground: oklch(1 0 0);
+  --muted: oklch(0.95 0.03 90);
+  --muted-foreground: oklch(0.45 0.05 275);
+  --accent: var(--kid-sun);
+  --accent-foreground: oklch(0.24 0.06 275);
+  --destructive: oklch(0.65 0.22 25);
+  --destructive-foreground: oklch(1 0 0);
+  --border: oklch(0.88 0.04 90);
+  --input: oklch(0.94 0.03 90);
+  --ring: var(--kid-teal);
+  --chart-1: var(--kid-teal);
+  --chart-2: var(--kid-coral);
+  --chart-3: var(--kid-sun);
+  --chart-4: var(--kid-grape);
+  --chart-5: var(--kid-mint);
+  --sidebar: oklch(0.98 0.02 90);
+  --sidebar-foreground: oklch(0.24 0.06 275);
+  --sidebar-primary: var(--kid-teal);
+  --sidebar-primary-foreground: oklch(1 0 0);
+  --sidebar-accent: oklch(0.94 0.03 90);
+  --sidebar-accent-foreground: oklch(0.24 0.06 275);
+  --sidebar-border: oklch(0.88 0.04 90);
+  --sidebar-ring: var(--kid-teal);
+
+  --input-background: oklch(0.96 0.02 90);
+  --switch-background: oklch(0.88 0.04 90);
+  --font-weight-medium: 500;
+  --font-weight-normal: 400;
+  --font-size: 16px;
+}
+
+.dark {
+  --background: oklch(0.20 0.05 275);
+  --foreground: oklch(0.984 0.003 247.858);
+  --card: oklch(0.26 0.06 275);
+  --card-foreground: oklch(0.984 0.003 247.858);
+  --popover: oklch(0.26 0.06 275);
+  --popover-foreground: oklch(0.984 0.003 247.858);
+  --primary: var(--kid-teal);
+  --primary-foreground: oklch(0.18 0.03 275);
+  --secondary: var(--kid-coral);
+  --secondary-foreground: oklch(0.984 0.003 247.858);
+  --muted: oklch(0.30 0.05 275);
+  --muted-foreground: oklch(0.704 0.04 256.788);
+  --accent: var(--kid-sun);
+  --accent-foreground: oklch(0.984 0.003 247.858);
+  --destructive: oklch(0.704 0.191 22.216);
+  --destructive-foreground: oklch(0.984 0.003 247.858);
+  --border: oklch(1 0 0 / 10%);
+  --input: oklch(1 0 0 / 15%);
+  --ring: var(--kid-teal);
+  --chart-1: oklch(0.488 0.243 264.376);
+  --chart-2: oklch(0.696 0.17 162.48);
+  --chart-3: oklch(0.769 0.188 70.08);
+  --chart-4: oklch(0.627 0.265 303.9);
+  --chart-5: oklch(0.645 0.246 16.439);
+  --sidebar: oklch(0.26 0.06 275);
+  --sidebar-foreground: oklch(0.984 0.003 247.858);
+  --sidebar-primary: oklch(0.488 0.243 264.376);
+  --sidebar-primary-foreground: oklch(0.984 0.003 247.858);
+  --sidebar-accent: oklch(0.30 0.05 275);
+  --sidebar-accent-foreground: oklch(0.984 0.003 247.858);
+  --sidebar-border: oklch(1 0 0 / 10%);
+  --sidebar-ring: var(--kid-teal);
+}
+
+@layer base {
+  * {
+    border-color: var(--color-border);
+  }
+
+  body {
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    font-family: var(--font-arabic-body);
+  }
+
+  h1, h2, h3, h4 {
+    font-family: var(--font-playful);
+  }
+
+  [dir="rtl"] h1, [dir="rtl"] h2, [dir="rtl"] h3, [dir="rtl"] h4 {
+    font-family: var(--font-arabic-display);
+  }
+}
+
+@utility bg-kid-hero {
+  background:
+    radial-gradient(circle at 15% 20%, color-mix(in oklab, var(--kid-sun) 55%, transparent) 0%, transparent 45%),
+    radial-gradient(circle at 85% 30%, color-mix(in oklab, var(--kid-coral) 55%, transparent) 0%, transparent 45%),
+    radial-gradient(circle at 50% 90%, color-mix(in oklab, var(--kid-grape) 45%, transparent) 0%, transparent 55%),
+    linear-gradient(160deg, color-mix(in oklab, var(--kid-sky) 90%, white) 0%, color-mix(in oklab, var(--kid-mint) 70%, white) 100%);
+}
+
+@utility bg-kid-page {
+  background:
+    radial-gradient(circle at 10% 0%, color-mix(in oklab, var(--kid-sun) 25%, transparent) 0%, transparent 40%),
+    radial-gradient(circle at 90% 10%, color-mix(in oklab, var(--kid-coral) 25%, transparent) 0%, transparent 40%),
+    var(--background);
+}
+
+@utility shadow-kid {
+  box-shadow: 0 10px 0 -4px color-mix(in oklab, var(--kid-teal) 22%, transparent),
+              0 20px 40px -20px color-mix(in oklab, var(--kid-grape) 40%, transparent);
+}
+
+@utility text-arabic {
+  font-family: var(--font-arabic-display);
+}
+
+::-webkit-scrollbar {
+  width: 7px;
+  height: 7px;
+  border-radius: 7px;
+
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: #ffffff;
+  border-radius: 7px;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #ac9ae8;
+  border-radius: 7px;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #896fdd;
+}
