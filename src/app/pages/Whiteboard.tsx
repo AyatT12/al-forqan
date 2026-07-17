@@ -30,7 +30,7 @@ function playClapSound() {
     
     // Load the MP3 file from the public folder
     // Assuming your file is at: public/clap.mp3
-    fetch('../../../public/sounds/clapping.mp3')
+    fetch('/sounds/clapping.mp3')
       .then(response => response.arrayBuffer())
       .then(arrayBuffer => ac.decodeAudioData(arrayBuffer))
       .then(audioBuffer => {
