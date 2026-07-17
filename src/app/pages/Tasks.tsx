@@ -537,7 +537,7 @@ export default function Tasks() {
             className="h-12 px-6 rounded-2xl font-black text-base gap-2"
           >
             <Download size={20} strokeWidth={3} />
-            {exporting ? "جاري التجهيز…" : "تقرير الحلقة "}
+            {exporting ? "...جاري التجهيز" : "تقرير الحلقة "}
           </Button>
         </div>
       </div>

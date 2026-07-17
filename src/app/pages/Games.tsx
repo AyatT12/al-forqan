@@ -414,7 +414,7 @@ function LoadingSpinner() {
   return (
     <div className="flex flex-col items-center justify-center py-16 gap-4">
       <div className="w-12 h-12 border-4 border-emerald-100 border-t-emerald-700 rounded-full animate-spin" />
-      <p style={{ fontFamily: "Cairo, sans-serif", color: "#7A5C48" }}>جاري تحميل الآيات...</p>
+      <p style={{ fontFamily: "Cairo, sans-serif", color: "#7A5C48" }}>...جاري التحميل</p>
     </div>
   );
 }

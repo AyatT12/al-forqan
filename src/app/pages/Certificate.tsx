@@ -989,7 +989,7 @@ export default function Certificate() {
             }}
           >
             {downloading ? (
-              <><RotateCcw size={18} className="animate-spin" /> جاري التحميل...</>
+              <><RotateCcw size={18} className="animate-spin" />... جاري التحميل</>
             ) : (
               <><Download size={18} /> تحميل الشهادة PNG</>
             )}

@@ -6,13 +6,171 @@ import {
   Undo2, Redo2, Trash2, Download, ImagePlus, Video,
   BookMarked, Play, Pause, RotateCcw, Plus, X,
   Play as Youtube, ZoomIn, ZoomOut, Image as ImageIcon, Layers,
-  MousePointer, ArrowRight, Star, Maximize2, Minimize2
+  MousePointer, ArrowRight, Star, Maximize2, Minimize2, Hand
 } from "lucide-react";
 import { SURAHS, WB_COLORS, WB_EMOJIS } from "../../lib/constants";
 import type { TextEl, StampEl, VideoOverlay, WBTool, ImageOverlay } from "../../lib/types";
 import { playSound } from "../../lib/sounds";
 import IslamicPattern from "../components/IslamicPattern";
 import { BalloonCelebrationOverlay, StarCelebrationOverlay, AlarmEffect, Curtain } from "../components/WBEffects";
+
+// Character images
+import kidClap from "../../Assets/images/kid-clap.png";
+import kidCheer from "../../Assets/images/kid-cheer.png";
+import kidPoint from "../../Assets/images/kid-point.png";
+import kidPaint from "../../Assets/images/kid-paint.png";
+
+/* ─── Local clapping sound (independent of ../../lib/sounds) ─── */
+function playClapSound() {
+  try {
+    // Create an AudioContext
+    const AC = window.AudioContext || (window as any).webkitAudioContext;
+    if (!AC) return;
+    const ac = new AC();
+    
+    // Load the MP3 file from the public folder
+    // Assuming your file is at: public/clap.mp3
+    fetch('../../../public/sounds/clapping.mp3')
+      .then(response => response.arrayBuffer())
+      .then(arrayBuffer => ac.decodeAudioData(arrayBuffer))
+      .then(audioBuffer => {
+        // Create a source and play it
+        const source = ac.createBufferSource();
+        source.buffer = audioBuffer;
+        source.connect(ac.destination);
+        source.start(0);
+      })
+      .catch(error => {
+        console.error('Failed to load clap sound:', error);
+        // Fallback to generated sound if file fails to load
+        generateFallbackClap(ac);
+      });
+  } catch (error) {
+    console.error('Error playing clap sound:', error);
+  }
+}
+
+// Fallback function in case the file fails to load
+function generateFallbackClap(ac) {
+  try {
+    const total = 12;
+    for (let i = 0; i < total; i++) {
+      const t = ac.currentTime + i * 0.13 + Math.random() * 0.02;
+      const bufferSize = Math.floor(ac.sampleRate * 0.08);
+      const noiseBuf = ac.createBuffer(1, bufferSize, ac.sampleRate);
+      const data = noiseBuf.getChannelData(0);
+      for (let j = 0; j < bufferSize; j++) data[j] = (Math.random() * 2 - 1) * (1 - j / bufferSize);
+      const src = ac.createBufferSource(); src.buffer = noiseBuf;
+      const bp = ac.createBiquadFilter(); bp.type = "bandpass"; bp.frequency.value = 1500 + Math.random() * 800; bp.Q.value = 0.9;
+      const g = ac.createGain();
+      g.gain.setValueAtTime(0.6, t);
+      g.gain.exponentialRampToValueAtTime(0.001, t + 0.09);
+      src.connect(bp); bp.connect(g); g.connect(ac.destination);
+      src.start(t); src.stop(t + 0.1);
+    }
+    setTimeout(() => ac.close().catch(() => {}), 3000);
+  } catch (_) {}
+}
+
+/* ─── Fullscreen clapping celebration: character in center + balloons filling the screen ─── */
+function ClapCelebrationOverlay({ onDone }) {
+  useEffect(() => {
+    const t = setTimeout(() => onDone?.(), 4200);
+    return () => clearTimeout(t);
+  }, [onDone]);
+
+  // Balloons spread across whole viewport (not just bottom)
+  const balloons = Array.from({ length: 28 }, (_, i) => ({
+    id: i,
+    left: Math.random() * 100,
+    startY: 100 + Math.random() * 40,
+    endY: -20 - Math.random() * 30,
+    delay: Math.random() * 1.2,
+    duration: 3 + Math.random() * 1.8,
+    color: ["#EF4444", "#F59E0B", "#10B981", "#3B82F6", "#8B5CF6", "#EC4899", "#F97316", "#14B8A6"][i % 8],
+    size: 40 + Math.random() * 40,
+  }));
+
+  const characters = [kidClap, kidCheer, kidClap];
+
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="fixed inset-0 z-[80] pointer-events-none overflow-hidden">
+
+      {/* Balloons filling the entire screen */}
+      {balloons.map(b => (
+        <motion.div
+          key={b.id}
+          initial={{ top: `${b.startY}%`, opacity: 0, rotate: -8 }}
+          animate={{ top: `${b.endY}%`, opacity: [0, 1, 1, 0.8], rotate: [ -8, 8, -8 ] }}
+          transition={{ duration: b.duration, delay: b.delay, ease: "easeOut", rotate: { repeat: Infinity, duration: 2 } }}
+          style={{ left: `${b.left}%`, position: "absolute" }}>
+          <div style={{
+            width: b.size, height: b.size * 1.2,
+            background: `radial-gradient(circle at 30% 30%, rgba(255,255,255,0.6), ${b.color} 70%)`,
+            borderRadius: "50%",
+            boxShadow: `0 6px 20px ${b.color}55`,
+          }}/>
+          <div style={{
+            width: 2, height: b.size * 0.9,
+            background: "#666", margin: "0 auto",
+          }}/>
+        </motion.div>
+      ))}
+
+      {/* Center clapping character */}
+      <motion.div
+        initial={{ scale: 0, opacity: 0, y: 40 }}
+        animate={{ scale: [0, 1.15, 1], opacity: 1, y: 0 }}
+        exit={{ scale: 0, opacity: 0 }}
+        transition={{ duration: 0.6, ease: "backOut" }}
+        className="absolute inset-0 flex items-center justify-center">
+        <motion.img
+          src={kidClap}
+          alt="Clapping"
+          animate={{ rotate: [-6, 6, -6], scale: [1, 1.08, 1] }}
+          transition={{ duration: 0.5, repeat: Infinity, ease: "easeInOut" }}
+          style={{
+            width: "min(340px, 45vw)",
+            height: "auto",
+            filter: "drop-shadow(0 20px 40px rgba(0,0,0,0.35))",
+          }}/>
+      </motion.div>
+
+      {/* Side cheering characters */}
+      <motion.img
+        src={kidCheer}
+        alt=""
+        initial={{ x: -200, opacity: 0 }}
+        animate={{ x: 0, opacity: 1, y: [0, -20, 0] }}
+        transition={{ duration: 0.6, y: { repeat: Infinity, duration: 0.7 } }}
+        className="absolute bottom-10 left-10"
+        style={{ width: "min(200px, 25vw)", filter: "drop-shadow(0 10px 20px rgba(0,0,0,0.3))" }}/>
+
+      <motion.img
+        src={kidCheer}
+        alt=""
+        initial={{ x: 200, opacity: 0 }}
+        animate={{ x: 0, opacity: 1, y: [0, -20, 0] }}
+        transition={{ duration: 0.6, delay: 0.15, y: { repeat: Infinity, duration: 0.7, delay: 0.35 } }}
+        className="absolute bottom-10 right-10"
+        style={{ width: "min(200px, 25vw)", transform: "scaleX(-1)", filter: "drop-shadow(0 10px 20px rgba(0,0,0,0.3))" }}/>
+
+      {/* "أحسنت!" caption */}
+      <motion.div
+        initial={{ y: -40, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ delay: 0.2, duration: 0.5 }}
+        className="absolute top-16 left-1/2 -translate-x-1/2 px-8 py-3 rounded-full bg-gradient-to-r from-amber-400 to-yellow-300 shadow-2xl"
+        style={{ fontFamily: "Cairo,sans-serif" }}>
+        <span className="text-3xl font-black text-emerald-900">أحسنت</span>
+      </motion.div>
+    </motion.div>
+  );
+}
 
 /* ─── YouTube Modal ─── */
 function YouTubeModal({ isOpen, onClose, onAdd }) {
@@ -85,8 +243,8 @@ function ResizeHandle({ onResize, isMobile }) {
     window.addEventListener("mouseup", handleUp);
     window.addEventListener("touchmove", handleMove, { passive: false });
     window.addEventListener("touchend", handleUp);
-    return () => { 
-      window.removeEventListener("mousemove", handleMove); 
+    return () => {
+      window.removeEventListener("mousemove", handleMove);
       window.removeEventListener("mouseup", handleUp);
       window.removeEventListener("touchmove", handleMove);
       window.removeEventListener("touchend", handleUp);
@@ -96,7 +254,7 @@ function ResizeHandle({ onResize, isMobile }) {
   const size = isMobile ? 40 : 28;
 
   return (
-    <div 
+    <div
       className="absolute bottom-0 right-0 cursor-se-resize bg-emerald-500 rounded-tl-lg opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center shadow-md"
       style={{ width: size, height: size, opacity: isMobile ? 0.8 : undefined }}
       onMouseDown={e => { e.stopPropagation(); setIsResizing(true); startPos.current = { x:e.clientX, y:e.clientY }; }}
@@ -157,24 +315,24 @@ function FullscreenImageModal({ image, onClose, isMobile }) {
   if (!image) return null;
 
   return (
-    <motion.div 
-      initial={{ opacity:0 }} 
-      animate={{ opacity:1 }} 
+    <motion.div
+      initial={{ opacity:0 }}
+      animate={{ opacity:1 }}
       exit={{ opacity:0 }}
       className="fixed inset-0 bg-black/90 z-[100] flex items-center justify-center p-4"
       onClick={onClose}>
-      <motion.div 
-        initial={{ scale:0.8 }} 
-        animate={{ scale:1 }} 
+      <motion.div
+        initial={{ scale:0.8 }}
+        animate={{ scale:1 }}
         exit={{ scale:0.8 }}
         className="relative max-w-full max-h-full"
         onClick={e => e.stopPropagation()}>
-        <img 
-          src={image.src} 
-          alt="Fullscreen" 
+        <img
+          src={image.src}
+          alt="Fullscreen"
           className="max-w-[95vw] max-h-[90vh] object-contain rounded-lg shadow-2xl"
           style={{ transform: image.flipH ? "scaleX(-1)" : "none" }}/>
-        <button 
+        <button
           onClick={onClose}
           className="absolute -top-4 -right-4 w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-lg hover:bg-gray-100 transition-colors">
           <X size={24} className="text-gray-800"/>
@@ -199,7 +357,7 @@ export default function Whiteboard() {
   /* overlays */
   const [imageEls,       setImageEls]       = useState([]);
   const [selectedImageId,setSelectedImageId] = useState(null);
-  const [fullscreenImage, setFullscreenImage] = useState(null); // NEW: fullscreen image state
+  const [fullscreenImage, setFullscreenImage] = useState(null);
 
   /* drawing state */
   const [tool,          setTool]          = useState("pen");
@@ -226,7 +384,7 @@ export default function Whiteboard() {
 
   /* effects */
   const [showBalloons, setShowBalloons] = useState(false);
-  const [showStars,    setShowStars]    = useState(false);
+  const [showClap,     setShowClap]     = useState(false);
   const [showAlarm,    setShowAlarm]    = useState(false);
   const [curtainVisible, setCurtainVisible] = useState(false);
 
@@ -259,7 +417,7 @@ export default function Whiteboard() {
   }, []);
 
   /* ── mobile panels ── */
-  const [mobilePanelOpen, setMobilePanelOpen] = useState(null); // 'tools' | 'ayah' | null
+  const [mobilePanelOpen, setMobilePanelOpen] = useState(null);
 
   /* ── notebook background drawing ── */
   const drawNotebookBg = (ctx, w, h) => {
@@ -295,14 +453,52 @@ export default function Whiteboard() {
   }, [timerRunning, timeLeft]);
 
   /* ── ayah panel ── */
-  useEffect(() => {
-    if (!showAyahPanel) return;
-    setPanelLoading(true); setPanelAyahs([]);
-    fetch(`https://api.alquran.cloud/v1/surah/${panelSurahId}`)
-      .then(r => r.json()).then(d => { if (d.status==="OK") setPanelAyahs(d.data.ayahs); })
-      .catch(()=>{}).finally(() => setPanelLoading(false));
-  }, [panelSurahId, showAyahPanel]);
+ useEffect(() => {
+  if (!showAyahPanel) return;
 
+  const fetchPanelSurah = async () => {
+    setPanelLoading(true);
+    setPanelAyahs([]);
+
+    try {
+      let allVerses: any[] = [];
+      let page = 1;
+      let totalPages = 1;
+
+      do {
+        const res = await fetch(
+          `https://api.quran.com/api/v4/verses/by_chapter/${panelSurahId}?language=ar&words=false&fields=text_uthmani&per_page=50&page=${page}`
+        );
+
+        if (!res.ok) {
+          throw new Error(`HTTP ${res.status}`);
+        }
+
+        const data = await res.json();
+
+        allVerses.push(...(data.verses ?? []));
+
+        totalPages = data.pagination?.total_pages ?? 1;
+        page++;
+      } while (page <= totalPages);
+
+      const mapped = allVerses.map((verse: any) => ({
+        number: verse.id,
+        numberInSurah: verse.verse_number,
+        text: verse.text_uthmani,
+      }));
+
+      setPanelAyahs(mapped);
+    } catch (err) {
+      console.error("Failed to load panel surah:", err);
+      setPanelAyahs([]);
+    } finally {
+      setPanelLoading(false);
+    }
+  };
+
+  fetchPanelSurah();
+}, [panelSurahId, showAyahPanel]);
   /* ── element dragging ── */
   useEffect(() => {
     if (!dragEl) return;
@@ -391,7 +587,7 @@ export default function Whiteboard() {
       const ctx = mainRef.current.getContext("2d"); applyStyle(ctx);
       if (tool==="eraser") { ctx.strokeStyle = (bgColor==="#FDFAF4"||bgColor==="#FFFFFF") ? "#FFFFFF" : bgColor; ctx.lineWidth=strokeWidth*5; }
       ctx.beginPath(); ctx.arc(p.x,p.y,strokeWidth/2,0,Math.PI*2);
-      ctx.fillStyle = tool==="eraser" ? ((bgColor==="#FDFAF4"||bgColor==="#FFFFFF") ? "#FFFFFF" : bgColor) : color; 
+      ctx.fillStyle = tool==="eraser" ? ((bgColor==="#FDFAF4"||bgColor==="#FFFFFF") ? "#FFFFFF" : bgColor) : color;
       ctx.globalAlpha=opacity/100; ctx.fill(); ctx.globalAlpha=1;
     }
   };
@@ -474,41 +670,89 @@ export default function Whiteboard() {
     e.target.value="";
   };
 
+  const drawDecoratedSurah = (ctx, t) => {
+    const boxX = t.x;
+    const boxY = t.y;
+    const boxW = 740;
+    const boxH = Math.max(260, 110 + String(t.text).split("\n").length * (t.fontSize * 1.6) + 90);
+    const radius = 24;
+
+    ctx.save();
+    ctx.beginPath();
+    ctx.moveTo(boxX + radius, boxY);
+    ctx.lineTo(boxX + boxW - radius, boxY);
+    ctx.quadraticCurveTo(boxX + boxW, boxY, boxX + boxW, boxY + radius);
+    ctx.lineTo(boxX + boxW, boxY + boxH - radius);
+    ctx.quadraticCurveTo(boxX + boxW, boxY + boxH, boxX + boxW - radius, boxY + boxH);
+    ctx.lineTo(boxX + radius, boxY + boxH);
+    ctx.quadraticCurveTo(boxX, boxY + boxH, boxX, boxY + boxH - radius);
+    ctx.lineTo(boxX, boxY + radius);
+    ctx.quadraticCurveTo(boxX, boxY, boxX + radius, boxY);
+    ctx.closePath();
+
+    ctx.fillStyle = t.bgColor || "rgba(252, 247, 235, 0.96)";
+    ctx.strokeStyle = t.borderColor || "#C8A96B";
+    ctx.lineWidth = 3;
+    ctx.fill();
+    ctx.stroke();
+
+    ctx.fillStyle = t.titleColor || "#A67C52";
+    ctx.font = `bold ${Math.max(24, t.fontSize)}px "Noto Naskh Arabic","Cairo",sans-serif`;
+    ctx.textAlign = "center";
+    ctx.textBaseline = "top";
+    ctx.fillText(t.title || "", boxX + boxW / 2, boxY + 20);
+
+    ctx.strokeStyle = "#D9B56A";
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.moveTo(boxX + 70, boxY + 72);
+    ctx.lineTo(boxX + boxW - 70, boxY + 72);
+    ctx.stroke();
+
+    ctx.font = `bold ${t.fontSize}px "Noto Naskh Arabic","Cairo",sans-serif`;
+    ctx.fillStyle = t.color || "#1B4D3E";
+    ctx.textAlign = "right";
+    ctx.textBaseline = "top";
+    const lines = String(t.text).split("\n");
+    const contentTop = boxY + 110;
+    lines.forEach((ln, i) => {
+      ctx.fillText(ln, boxX + boxW - 40, contentTop + i * t.fontSize * 1.65);
+    });
+
+    ctx.restore();
+  };
+
   /* ── save with text rendering ── */
   const saveImg = () => {
     const c=document.createElement("canvas");
     c.width=mainRef.current.width; c.height=mainRef.current.height;
     const ctx=c.getContext("2d");
-    
-    // Draw background image first if present
+
     if (bgImage) {
-      const bi=new Image(); 
+      const bi=new Image();
       bi.src=bgImage;
-      // We need to wait for the image to load before drawing
       if (bi.complete) {
-        ctx.globalAlpha=bgImageOpacity/100; 
-        ctx.drawImage(bi,0,0,c.width,c.height); 
+        ctx.globalAlpha=bgImageOpacity/100;
+        ctx.drawImage(bi,0,0,c.width,c.height);
         ctx.globalAlpha=1;
         drawRest();
       } else {
         bi.onload = () => {
-          ctx.globalAlpha=bgImageOpacity/100; 
-          ctx.drawImage(bi,0,0,c.width,c.height); 
+          ctx.globalAlpha=bgImageOpacity/100;
+          ctx.drawImage(bi,0,0,c.width,c.height);
           ctx.globalAlpha=1;
           drawRest();
         };
-        return; // Exit early, will trigger download in onload
+        return;
       }
     } else {
       drawRest();
     }
 
     function drawRest() {
-      // Draw canvas content
       ctx.drawImage(mainRef.current,0,0);
-      
-      // Draw images
-      imageEls.forEach(img => { 
+
+      imageEls.forEach(img => {
         if (img.imageElement) {
           if (img.flipH) {
             ctx.save();
@@ -521,30 +765,32 @@ export default function Whiteboard() {
           }
         }
       });
-      
-      // Draw stamps
-      stamps.forEach(s => { 
-        ctx.font=`${s.size}px serif`; 
+
+      stamps.forEach(s => {
+        ctx.font=`${s.size}px serif`;
         ctx.textAlign = "center";
         ctx.textBaseline = "middle";
-        ctx.fillText(s.emoji, s.x, s.y); 
+        ctx.fillText(s.emoji, s.x, s.y);
         ctx.textAlign = "start";
         ctx.textBaseline = "alphabetic";
       });
-      
-      // Draw text (on top of everything)
+
       textEls.forEach(t => {
-        ctx.font=`bold ${t.fontSize}px "Noto Naskh Arabic","Cairo",sans-serif`;
-        ctx.fillStyle=t.color; 
-        ctx.direction="rtl"; 
-        ctx.textAlign="right";
-        ctx.textBaseline = "top";
-        ctx.fillText(t.text, t.x, t.y);
-        ctx.textAlign = "start";
-        ctx.textBaseline = "alphabetic";
+        if (t.kind === "surahPage") {
+          drawDecoratedSurah(ctx, t);
+        } else {
+          ctx.font=`bold ${t.fontSize}px "Noto Naskh Arabic","Cairo",sans-serif`;
+          ctx.fillStyle=t.color;
+          ctx.direction="rtl";
+          ctx.textAlign="right";
+          ctx.textBaseline = "top";
+          const lines = String(t.text).split("\n");
+          lines.forEach((ln, i) => ctx.fillText(ln, t.x, t.y + i * t.fontSize * 1.6));
+          ctx.textAlign = "start";
+          ctx.textBaseline = "alphabetic";
+        }
       });
-      
-      // Draw video thumbnail if present
+
       if (videoEl) {
         ctx.fillStyle = "#000";
         ctx.fillRect(videoEl.x, videoEl.y, videoEl.w, videoEl.h);
@@ -556,11 +802,10 @@ export default function Whiteboard() {
         ctx.textAlign = "start";
         ctx.textBaseline = "alphabetic";
       }
-      
-      // Trigger download
-      const a=document.createElement("a"); 
-      a.download="لوحتي.png"; 
-      a.href=c.toDataURL("image/png"); 
+
+      const a=document.createElement("a");
+      a.download="لوحتي.png";
+      a.href=c.toDataURL("image/png");
       a.click();
     }
   };
@@ -568,6 +813,47 @@ export default function Whiteboard() {
   /* ── ayah copy ── */
   const copyAyahToBoard = (text) => {
     setTextEls(prev=>[...prev,{id:Date.now().toString(),x:200+Math.random()*300,y:150+Math.random()*200,text,color:"#1B4D3E",fontSize:26}]);
+  };
+
+  /* ── whole-sura copy: arrange like a moshap  page ── */
+  // Convert an integer to Arabic-Indic digits (١٢٣...)
+  const toArabicDigits = (n) => String(n).replace(/[0-9]/g, d => "٠١٢٣٤٥٦٧٨٩"[+d]);
+
+  const copyWholeSurahToBoard = () => {
+    if (!panelAyahs || panelAyahs.length === 0) return;
+    const surahName = SURAHS.find(s => (s.id || 0) === panelSurahId)?.name || "";
+    const header = `سُورَةُ ${surahName}`;
+    const body = panelAyahs
+      .map(a => `${a.text} ﴿${toArabicDigits(a.numberInSurah)}﴾`)
+      .join(" ");
+
+    const maxCharsPerLine = 55;
+    const words = body.split(" ");
+    const lines = [];
+    let cur = "";
+    for (const w of words) {
+      if ((cur + " " + w).trim().length > maxCharsPerLine) {
+        if (cur) lines.push(cur.trim());
+        cur = w;
+      } else {
+        cur = (cur + " " + w).trim();
+      }
+    }
+    if (cur) lines.push(cur.trim());
+
+    setTextEls(prev => [...prev, {
+      id: Date.now().toString(),
+      x: 120,
+      y: 90,
+      text: lines.join("\n"),
+      title: header,
+      kind: "surahPage",
+      color: "#1B4D3E",
+      fontSize: 24,
+      bgColor: "rgba(252, 247, 235, 0.96)",
+      borderColor: "#C8A96B",
+      titleColor: "#A67C52",
+    }]);
   };
 
   /* ── canvas-to-screen coords ── */
@@ -619,9 +905,9 @@ export default function Whiteboard() {
       <AnimatePresence>
         {showYouTubeModal && <YouTubeModal isOpen={showYouTubeModal} onClose={()=>setShowYouTubeModal(false)} onAdd={addYouTubeVideo}/>}
         {fullscreenImage && (
-          <FullscreenImageModal 
-            image={fullscreenImage} 
-            onClose={() => setFullscreenImage(null)} 
+          <FullscreenImageModal
+            image={fullscreenImage}
+            onClose={() => setFullscreenImage(null)}
             isMobile={isMobile}/>
         )}
       </AnimatePresence>
@@ -654,7 +940,11 @@ export default function Whiteboard() {
 
         <div className="w-px h-5 bg-gray-200 mx-0.5 flex-shrink-0"/>
         <button onClick={()=>{playSound("balloon");setShowBalloons(true);window.dispatchEvent(new CustomEvent("mascot:cheer",{detail:"يا سلام!"}));}} title="بالونات" className="p-1.5 rounded-lg hover:bg-amber-100 flex-shrink-0 text-lg">🎈</button>
-        <button onClick={()=>{playSound("star");setShowStars(true);window.dispatchEvent(new CustomEvent("mascot:cheer",{detail:"نجوم لك!"}));}}    title="نجوم"     className="p-1.5 rounded-lg hover:bg-yellow-100 flex-shrink-0 text-lg">⭐</button>
+        {/* Clapping button (was stars) */}
+        <button
+          onClick={()=>{ playClapSound(); setShowClap(true); window.dispatchEvent(new CustomEvent("mascot:cheer",{detail:"أحسنت! 👏"})); }}
+          title="تصفيق"
+          className="p-1.5 rounded-lg hover:bg-yellow-100 flex-shrink-0 text-lg">👏</button>
         <button onClick={()=>{playSound("alarm");setShowAlarm(true);}}   title="تنبيه"    className="p-1.5 rounded-lg hover:bg-red-100 flex-shrink-0 text-lg">🔔</button>
         <div className="w-px h-5 bg-gray-200 mx-0.5 flex-shrink-0"/>
         <button onClick={()=>setCurtainVisible(v=>!v)} title="الستارة" className={`p-1.5 rounded-lg flex-shrink-0 text-lg transition-colors ${curtainVisible?"bg-primary/20":""}`}>🎭</button>
@@ -677,10 +967,19 @@ export default function Whiteboard() {
           <div className="p-2 border-b border-border">
             <p className="text-xs font-bold mb-2" style={{ fontFamily:"Cairo,sans-serif", color:"#1B4D3E" }}>📖 القرآن الكريم</p>
             <select value={panelSurahId} onChange={e=>setPanelSurahId(+e.target.value)}
-              className="w-full text-xs px-2 py-1.5 rounded-lg border border-border bg-background text-right"
+              className="w-full text-xs px-2 py-1.5 rounded-lg border border-border bg-background text-right mb-2"
               style={{ fontFamily:"Cairo,sans-serif" }} dir="rtl">
               {SURAHS.map((s,i) => <option key={s.id || i+1} value={s.id || i+1}>{s.id || i+1}. {s.name}</option>)}
             </select>
+            {/* Add whole sura button */}
+            <button
+              onClick={copyWholeSurahToBoard}
+              disabled={panelLoading || panelAyahs.length === 0}
+              className="w-full flex items-center justify-center gap-1.5 px-2 py-2 rounded-lg text-xs font-bold text-white disabled:opacity-40 disabled:cursor-not-allowed hover:brightness-110 transition"
+              style={{ background:"#1B4D3E", fontFamily:"Cairo,sans-serif" }}
+              title="إضافة السورة كاملة إلى اللوحة">
+              <BookMarked size={13}/> إضافة السورة كاملة
+            </button>
           </div>
           <div className="flex-1 overflow-y-auto p-2">
             {panelLoading ? <div className="flex justify-center py-8"><div className="w-6 h-6 border-2 border-primary/20 border-t-primary rounded-full animate-spin"/></div> : (
@@ -735,21 +1034,42 @@ export default function Whiteboard() {
             return (
               <div key={t.id} className="absolute" style={{ left:lx, top:ly-t.fontSize*scaleY*zoomLevel, zIndex:6, pointerEvents:"auto" }}>
                 {editingTextId===t.id ? (
-                  <textarea autoFocus value={t.text}
-                    onChange={e=>setTextEls(p=>p.map(tt=>tt.id===t.id?{...tt,text:e.target.value}:tt))}
-                    onBlur={e=>commitEditText(t.id,e.target.value)}
-                    onKeyDown={e=>{ if(e.key==="Escape") commitEditText(t.id,t.text); }}
-                    className="border-2 border-primary rounded-lg px-2 py-1 bg-white/95 shadow-xl outline-none text-right resize-none"
-                    style={{ fontFamily:"Noto Naskh Arabic,serif", fontSize:t.fontSize*scaleY*zoomLevel, color:t.color, direction:"rtl", minWidth:isMobile?"80px":"120px", minHeight:isMobile?"30px":"40px" }}/>
+                  <div className={`rounded-[24px] border-2 bg-[#fcf7eb]/95 p-4 shadow-[0_12px_30px_rgba(0,0,0,0.16)] ${t.kind === "surahPage" ? "min-w-[340px]" : "min-w-[140px]"}`} style={{ borderColor: t.kind === "surahPage" ? (t.borderColor || "#C8A96B") : "#1B4D3E" }}>
+                    {t.kind === "surahPage" && (
+                      <div className="mb-3 flex items-center justify-center gap-2 text-amber-700">
+                        <span>✿</span>
+                        <div className="h-px flex-1 bg-gradient-to-r from-transparent via-amber-600 to-transparent" />
+                        <span className="text-sm font-black" style={{ fontFamily:"Cairo,sans-serif" }}>{t.title}</span>
+                        <div className="h-px flex-1 bg-gradient-to-r from-transparent via-amber-600 to-transparent" />
+                        <span>✿</span>
+                      </div>
+                    )}
+                    <textarea autoFocus value={t.text}
+                      onChange={e=>setTextEls(p=>p.map(tt=>tt.id===t.id?{...tt,text:e.target.value}:tt))}
+                      onBlur={e=>commitEditText(t.id,e.target.value)}
+                      onKeyDown={e=>{ if(e.key==="Escape") commitEditText(t.id,t.text); }}
+                      className="w-full border-0 bg-transparent outline-none text-right resize-none"
+                      style={{ fontFamily:"Noto Naskh Arabic,serif", fontSize:t.fontSize*scaleY*zoomLevel, color:t.color, direction:"rtl", minHeight:isMobile?"30px":"40px" }}/>
+                  </div>
                 ) : (
-                  <div className="relative group cursor-move select-none"
+                  <div className={`relative group cursor-move select-none ${t.kind === "surahPage" ? "rounded-[24px] border-2 bg-[#fcf7eb]/95 p-4 shadow-[0_12px_30px_rgba(0,0,0,0.14)]" : ""}`}
+                    style={t.kind === "surahPage" ? { borderColor:t.borderColor || "#C8A96B", maxWidth:720 } : undefined}
                     onMouseDown={e=>{ e.stopPropagation(); setDragEl({type:"text",id:t.id,mx:e.clientX,my:e.clientY,ex:t.x,ey:t.y}); }}
                     onTouchStart={e=>{ e.stopPropagation(); const touch=e.touches[0]; setDragEl({type:"text",id:t.id,mx:touch.clientX,my:touch.clientY,ex:t.x,ey:t.y}); }}
                     onDoubleClick={e=>{ e.stopPropagation(); setEditingTextId(t.id); }}>
-                    <span className="font-bold whitespace-pre" style={{ fontFamily:"Noto Naskh Arabic,serif", fontSize:t.fontSize*scaleY*zoomLevel, color:t.color, lineHeight:1.4, display:"block" }}>{t.text}</span>
+                    {t.kind === "surahPage" && (
+                      <div className="mb-3 flex items-center justify-center gap-2 text-amber-700">
+                        <span>✿</span>
+                        <div className="h-px flex-1 bg-gradient-to-r from-transparent via-amber-600 to-transparent" />
+                        <span className="text-sm font-black" style={{ fontFamily:"Cairo,sans-serif" }}>{t.title}</span>
+                        <div className="h-px flex-1 bg-gradient-to-r from-transparent via-amber-600 to-transparent" />
+                        <span>✿</span>
+                      </div>
+                    )}
+                    <span className="font-bold whitespace-pre-line" style={{ fontFamily:"Noto Naskh Arabic,serif", fontSize:t.fontSize*scaleY*zoomLevel, color:t.color, lineHeight:1.8, display:"block", textAlign:"right", direction:"rtl" }}>{t.text}</span>
                     <button onClick={e=>{ e.stopPropagation(); setTextEls(p=>p.filter(tt=>tt.id!==t.id)); }}
-                      className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full text-xs flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity z-10"
-                      style={isMobile ? { width:32, height:32, fontSize:16, opacity:0.8 } : { width:20, height:20, fontSize:11 }}>✕</button>
+                      className="absolute -top-4 -right-4 bg-red-500 text-white rounded-full text-xs flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity z-10"
+                      style={isMobile ? { width:18, height:18, fontSize:10, opacity:0.8 } : { width:20, height:20, fontSize:11 }}>✕</button>
                   </div>
                 )}
               </div>
@@ -800,19 +1120,18 @@ export default function Whiteboard() {
 
                 <img src={img.src} alt="Uploaded"
                   className="w-full h-full"
-                  style={{ 
-                    objectFit:"contain", 
-                    display:"block", 
-                    borderRadius:2, 
-                    userSelect:"none", 
+                  style={{
+                    objectFit:"contain",
+                    display:"block",
+                    borderRadius:2,
+                    userSelect:"none",
                     pointerEvents:"none",
                     transform: img.flipH ? "scaleX(-1)" : "none",
                   }}
                   draggable={false}/>
 
-                {/* Fullscreen button (mobile) */}
                 {isMobile && (
-                  <button 
+                  <button
                     onClick={e => { e.stopPropagation(); setFullscreenImage(img); }}
                     className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-12 h-12 bg-black/50 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity z-10 shadow-lg"
                     title="تكبير الصورة">
@@ -820,13 +1139,11 @@ export default function Whiteboard() {
                   </button>
                 )}
 
-                {/* Delete button */}
                 <button onClick={e=>{ e.stopPropagation(); setImageEls(p=>p.filter(im=>im.id!==img.id)); setSelectedImageId(null); }}
                   className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity z-10 hover:bg-red-600 shadow-md"
                   style={isMobile ? { width:32, height:32, fontSize:16, opacity:0.8 } : { width:24, height:24, fontSize:14, lineHeight:1 }}>✕</button>
 
-                {/* SE corner resize */}
-                <ResizeHandle 
+                <ResizeHandle
                   isMobile={isMobile}
                   onResize={(dx,dy) => {
                     setImageEls(prev=>prev.map(im=>{
@@ -837,7 +1154,6 @@ export default function Whiteboard() {
                     }));
                   }}/>
 
-                {/* Lock aspect ratio toggle */}
                 <button onClick={e=>{ e.stopPropagation(); setImageEls(p=>p.map(im=>im.id===img.id?{...im,locked:!im.locked}:im)); }}
                   className="absolute top-0 left-0 w-6 h-6 rounded-br-lg opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-xs shadow-md"
                   style={{ background: img.locked ? "#1B4D3E" : "rgba(0,0,0,0.5)", color:"white" }}
@@ -845,7 +1161,6 @@ export default function Whiteboard() {
                   {img.locked ? "🔒" : "🔓"}
                 </button>
 
-                {/* Flip horizontal */}
                 <button onClick={e=>{ e.stopPropagation(); setImageEls(p=>p.map(im=>im.id===img.id?{...im,flipH:!im.flipH}:im)); }}
                   className="absolute top-0 left-7 w-6 h-6 rounded-br-lg opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-xs shadow-md"
                   style={{ background:"rgba(0,0,0,0.5)", color:"white", borderRadius:"0 0 4px 0" }}
@@ -886,7 +1201,7 @@ export default function Whiteboard() {
                 {videoEl.isYouTube
                   ? <iframe src={videoEl.src} className="w-full" style={{ height:"calc(100% - 28px)" }} allowFullScreen allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"/>
                   : <video  src={videoEl.src} controls className="w-full" style={{ height:"calc(100% - 28px)" }}/>}
-                <ResizeHandle 
+                <ResizeHandle
                   isMobile={isMobile}
                   onResize={(dx,dy)=>setVideoEl(prev=>prev?{...prev,w:Math.max(200,prev.w+dx),h:Math.max(120,prev.h+dy)}:null)}/>
               </div>
@@ -896,7 +1211,7 @@ export default function Whiteboard() {
           {/* ── Effects ── */}
           <AnimatePresence>
             {showBalloons && <BalloonCelebrationOverlay onDone={()=>setShowBalloons(false)}/>}
-            {showStars    && <StarCelebrationOverlay    onDone={()=>setShowStars(false)}/>}
+            {showClap     && <ClapCelebrationOverlay    onDone={()=>setShowClap(false)}/>}
             {showAlarm    && <AlarmEffect               onDone={()=>setShowAlarm(false)}/>}
           </AnimatePresence>
 

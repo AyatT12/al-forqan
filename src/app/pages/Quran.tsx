@@ -17,16 +17,53 @@ export default function Quran() {
 
   useEffect(() => { fetchSurah(1); }, []);
 
-  const fetchSurah = async (id: number) => {
-    setLoading(true); setAyahs([]); setCurAyah(0); setPlaying(false);
-    if (audioRef.current) audioRef.current.pause();
-    try {
-      const res = await fetch(`https://api.alquran.cloud/v1/surah/${id}`);
-      const d = await res.json();
-      if (d.status === "OK") setAyahs(d.data.ayahs);
-    } catch (_) {}
-    setLoading(false);
-  };
+ const fetchSurah = async (id: number) => {
+  setLoading(true);
+  setAyahs([]);
+  setCurAyah(0);
+  setPlaying(false);
+
+  if (audioRef.current) {
+    audioRef.current.pause();
+    audioRef.current.currentTime = 0;
+  }
+
+  try {
+    let allVerses: any[] = [];
+    let page = 1;
+    let totalPages = 1;
+
+    do {
+      const res = await fetch(
+        `https://api.quran.com/api/v4/verses/by_chapter/${id}?language=ar&words=false&fields=text_uthmani&per_page=50&page=${page}`
+      );
+
+      if (!res.ok) {
+        throw new Error(`HTTP ${res.status}`);
+      }
+
+      const data = await res.json();
+
+      allVerses.push(...(data.verses ?? []));
+
+      totalPages = data.pagination?.total_pages ?? 1;
+      page++;
+    } while (page <= totalPages);
+
+    const mapped = allVerses.map((verse: any) => ({
+      number: verse.id,
+      numberInSurah: verse.verse_number,
+      text: verse.text_uthmani,
+    }));
+
+    setAyahs(mapped);
+  } catch (err) {
+    console.error("Failed to load surah:", err);
+    setAyahs([]);
+  }
+
+  setLoading(false);
+};
 
   const playAyah = useCallback((idx: number) => {
     if (!audioRef.current || !ayahs[idx]) return;

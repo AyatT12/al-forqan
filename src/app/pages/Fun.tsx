@@ -105,7 +105,7 @@ function AnimalMemoryGame({ onWin }: { onWin: () => void }) {
             style={{ background: card.flipped || card.matched ? BG[idx % BG.length] : "linear-gradient(135deg,#1B4D3E,#2d7a63)", border: card.matched ? "3px solid #22C55E" : card.flipped ? "3px solid #D4A843" : "3px solid transparent" }}>
             {card.flipped || card.matched
               ? <><span className="text-3xl">{card.emoji}</span><span className="text-xs font-medium" style={{ fontFamily: "Cairo, sans-serif", color: "#2C1810" }}>{card.name}</span></>
-              : <span className="text-2xl">🌟</span>
+              : <span className="text-2xl" style={{color:"white"}}>{idx + 1}</span>
             }
           </motion.button>
         ))} 

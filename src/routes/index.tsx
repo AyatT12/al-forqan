@@ -15,7 +15,7 @@ function Index() {
   if (!App) {
     return (
       <div className="min-h-screen w-full flex items-center justify-center bg-kid-page">
-        <div className="text-lg font-bold text-primary">جاري التحميل...</div>
+        <div className="text-lg font-bold text-primary"> ...جاري التحميل</div>
       </div>
     );
   }

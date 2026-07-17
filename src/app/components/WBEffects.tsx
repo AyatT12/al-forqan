@@ -13,24 +13,51 @@ export function BalloonCelebrationOverlay({ onDone }: { onDone: () => void }) {
   const colors = ["#EF4444","#F97316","#EAB308","#22C55E","#3B82F6","#A855F7","#EC4899","#06B6D4"];
 
   return (
-    <div className="absolute inset-0 pointer-events-none overflow-hidden z-20">
-      {Array.from({ length: 20 }, (_, i) => (
-        <motion.div
-          key={i}
-          className="absolute flex flex-col items-center"
-          style={{ left: `${3 + Math.random() * 94}%`, bottom: "-80px" }}
-          animate={{ y: "-120%", x: [0, Math.sin(i) * 50, 0] }}
-          transition={{ duration: 2.2 + Math.random() * 1.5, delay: Math.random() * 0.8, ease: "easeOut" }}
-        >
-          <div
-            className="w-10 h-12 rounded-full flex items-center justify-center text-2xl shadow-lg"
-            style={{ background: colors[i % colors.length] }}
+    <div className="fixed inset-0 pointer-events-none overflow-hidden z-[90]">
+      {Array.from({ length: 24 }, (_, i) => {
+        // Store random values per balloon so they don't change on re-render
+        const randomX = 3 + Math.random() * 94;
+        const randomDuration = 2.2 + Math.random() * 1.5;
+        const randomDelay = Math.random() * 0.8;
+        const swingAmount = (Math.random() - 0.5) * 100; // Random swing
+
+        return (
+          <motion.div
+            key={i}
+            className="absolute flex flex-col items-center"
+            initial={{ 
+              left: `${randomX}%`, 
+              bottom: "-80px",
+              opacity: 0
+            }}
+            animate={{ 
+              bottom: "110%",  // Changed from y: "-120%" to animate bottom property
+              x: [0, swingAmount, -swingAmount, 0],
+              opacity: [0, 1, 1, 0] // Fade in and out
+            }}
+            transition={{ 
+              duration: randomDuration, 
+              delay: randomDelay, 
+              ease: "easeOut" 
+            }}
           >
-            🎈
-          </div>
-          <div style={{ background: colors[i % colors.length], width: 1, height: 32, opacity: 0.6 }} />
-        </motion.div>
-      ))}
+            <div
+              className="w-10 h-12 rounded-full flex items-center justify-center text-2xl shadow-lg"
+              style={{ background: colors[i % colors.length] }}
+            >
+              🎈
+            </div>
+            <div 
+              style={{ 
+                background: colors[i % colors.length], 
+                width: 1, 
+                height: 32, 
+                opacity: 0.6 
+              }} 
+            />
+          </motion.div>
+        );
+      })}
     </div>
   );
 }
