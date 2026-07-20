@@ -65,7 +65,7 @@
   --color-kid-sky: var(--kid-sky);
   --color-kid-grape: var(--kid-grape);
   --color-kid-mint: var(--kid-mint);
-  --font-arabic-display: "Amiri", "Noto Naskh Arabic", serif;
+  --font-arabic-display: "Cairo", "Noto Naskh Arabic", serif;
   --font-arabic-body: "Cairo", "Noto Naskh Arabic", sans-serif;
   --font-playful: "Fredoka", "Cairo", sans-serif;
 }
@@ -81,7 +81,7 @@
   --kid-grape: oklch(0.65 0.19 305);
   --kid-mint:  oklch(0.87 0.11 155);
 
-  --background: oklch(0.985 0.02 90);
+  --background: rgb(248, 245, 240);
   --foreground: oklch(0.24 0.06 275);
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.24 0.06 275);
