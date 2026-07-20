@@ -89,7 +89,7 @@ export function StarCelebrationOverlay({ onDone }: { onDone: () => void }) {
         );
       })}
       <motion.div
-        className="text-6xl"
+        className="text-5xl"
         initial={{ scale: 0 }}
         animate={{ scale: [0, 1.5, 1], rotate: [0, 20, -20, 0] }}
         transition={{ duration: 0.8 }}
@@ -134,14 +134,14 @@ export function Curtain({ visible, onReveal }: { visible: boolean; onReveal: () 
       style={{
         transform: visible ? "translateY(0)" : "translateY(-100%)",
         transition: "transform 0.75s cubic-bezier(0.4,0,0.2,1)",
-        background: "linear-gradient(180deg,#1B4D3E 0%,#0e2d23 100%)",
+        background: "linear-gradient(180deg,rgb(65, 27, 77) 0%,rgb(14, 45, 35) 100%)",
         pointerEvents: visible ? "auto" : "none",
       }}
     >
       <IslamicPattern opacity={0.1} />
       <div className="absolute inset-0 flex flex-col items-center justify-center text-white gap-5">
         <div className="text-8xl">🕌</div>
-        <p className="text-3xl font-bold" style={{ fontFamily: "Amiri, serif" }}>
+        <p className="text-3xl font-bold" style={{ fontFamily: "Cairo, serif" }}>
           انقر في أي مكان لرفع الستارة
         </p>
         <p className="text-sm opacity-50" style={{ fontFamily: "Cairo, sans-serif" }}>

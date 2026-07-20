@@ -33,8 +33,8 @@ export default function Confetti({ message }: { message: string }) {
         <div
           className="text-2xl lg:text-3xl font-bold px-8 py-5 rounded-3xl text-white shadow-2xl text-center"
           style={{
-            background: "linear-gradient(135deg,#1B4D3E,#2d7a63)",
-            fontFamily: "Amiri, serif",
+            background: "linear-gradient(135deg,#6d32a3,#2d7a63)",
+            fontFamily: "Cairo, serif",
             maxWidth: "80vw",
           }}
         >

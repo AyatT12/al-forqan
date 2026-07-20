@@ -91,7 +91,7 @@ export default function Mascot() {
               className="pointer-events-none absolute bottom-28 left-1/2 -translate-x-1/2 rounded-3xl px-6 py-3 text-white text-lg lg:text-xl font-black shadow-2xl"
               style={{
                 background: "linear-gradient(135deg,var(--kid-teal),var(--kid-grape))",
-                fontFamily: "Amiri, serif",
+                fontFamily: "Cairo, serif",
               }}
             >
               {bubble}

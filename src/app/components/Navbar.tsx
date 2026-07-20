@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { NavLink, useNavigate } from "react-router";
 import { motion } from "motion/react";
-import { Menu, X, BookOpen, Gamepad2, Sparkles, Award, Pencil, Home as HomeIcon, ListChecks } from "lucide-react";
+import { Menu, X, BookOpen, Gamepad2,Balloon, Award, Pencil, Home as HomeIcon, ListChecks } from "lucide-react";
 import logo from "../../Assets/images/Logo.png";
 import kidBoy from "../../Assets/images/kid-boy.png";
 
@@ -10,7 +10,7 @@ const NAV_ITEMS = [
   { path: "/",            label: "الرئيسية",  Icon: HomeIcon,  color: "var(--kid-teal)"  },
   { path: "/quran",       label: "القرآن",    Icon: BookOpen,  color: "var(--kid-grape)" },
   { path: "/games",       label: "التحفيظ",   Icon: Gamepad2,  color: "var(--kid-coral)" },
-  { path: "/fun",         label: "ترفيه",     Icon: Sparkles,  color: "var(--kid-sun)"   },
+  { path: "/fun",         label: "ترفيه",     Icon: Balloon,  color: "var(--kid-sun)"   },
   { path: "/certificate", label: "الشهادات",  Icon: Award,     color: "var(--kid-grape)" },
   { path: "/whiteboard",  label: "السبورة",   Icon: Pencil,    color: "var(--kid-mint)"  },
   { path: "/tasks",       label: "مهام الحلقة", Icon: ListChecks, color: "var(--kid-sky)" },
@@ -22,7 +22,7 @@ export default function Navbar() {
 
   return (
     <header
-      className="relative z-50 flex-shrink-0 border-b-4 border-white"
+      className="relative z-50 flex-shrink-0  border-white"
       style={{
         background:
           "linear-gradient(120deg, color-mix(in oklab, var(--kid-teal) 88%, white) 0%, color-mix(in oklab, var(--kid-grape) 78%, white) 100%)",
