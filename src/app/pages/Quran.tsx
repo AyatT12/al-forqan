@@ -86,7 +86,7 @@ export default function Quran() {
       <div className="p-4 lg:p-6 border-b border-border bg-card flex-shrink-0">
         <div className="max-w-3xl mx-auto">
           <div className="flex items-center gap-3 mb-4">
-            <h2 className="text-xl font-bold" style={{ fontFamily: "Amiri, serif", color: "#411b4d" }}>
+            <h2 className="text-xl font-bold" style={{ fontFamily: "Cairo, serif", color: "#411b4d" }}>
               القرآن الكريم
             </h2>
             <span
@@ -102,7 +102,7 @@ export default function Quran() {
             <button
               onClick={() => setShowList(v => !v)}
               className="w-full flex items-center justify-between px-4 py-3 bg-background border border-border rounded-xl hover:border-primary/50 transition-colors"
-              style={{ fontFamily: "Amiri, serif", color: "#411b4d" }}
+              style={{ fontFamily: "Cairo, serif", color: "#411b4d" }}
             >
               <div className="flex items-center gap-3">
                 <span
@@ -123,7 +123,7 @@ export default function Quran() {
                     key={s.id}
                     onClick={() => { setSelSurah(s.id); setShowList(false); fetchSurah(s.id); }}
                     className={`w-full flex items-center gap-3 px-4 py-2.5 hover:bg-muted text-right transition-colors ${selSurah === s.id ? "bg-primary/10" : ""}`}
-                    style={{ fontFamily: "Amiri, serif", color: selSurah === s.id ? "#411b4d" : "#2C1810" }}
+                    style={{ fontFamily: "Cairo, serif", color: selSurah === s.id ? "#411b4d" : "#2C1810" }}
                   >
                     <span className="text-xs w-8 text-center" style={{ fontFamily: "Cairo, sans-serif", color: "#7A5C48" }}>{s.id}</span>
                     <span>{s.name}</span>

@@ -95,14 +95,14 @@ function AnimalMemoryGame({ onWin }: { onWin: () => void }) {
   return (
     <div className="space-y-4" dir="rtl">
       <div className="flex items-center justify-between">
-        <p className="font-semibold" style={{ fontFamily: "Cairo, sans-serif", color: "#1B4D3E" }}>{cards.filter(c => c.matched).length / 2}/{ANIMALS.length} 🐾</p>
+        <p className="font-semibold" style={{ fontFamily: "Cairo, sans-serif", color: "#6d32a3" }}>{cards.filter(c => c.matched).length / 2}/{ANIMALS.length} 🐾</p>
         <button onClick={() => { setCards(make()); setSel([]); setLocked(false); }} className="p-2 rounded-lg hover:bg-muted"><RotateCcw size={18} /></button>
       </div>
       <div className="grid grid-cols-4 gap-2">
         {cards.map((card, idx) => (
           <motion.button key={card.id} whileHover={{ scale: card.matched ? 1 : 1.06 }} whileTap={{ scale: 0.92 }} onClick={() => flip(card.id)}
             className={`aspect-square rounded-2xl flex flex-col items-center justify-center gap-1 transition-all shadow-sm ${card.matched ? "opacity-60 cursor-default" : "cursor-pointer"}`}
-            style={{ background: card.flipped || card.matched ? BG[idx % BG.length] : "linear-gradient(135deg,#1B4D3E,#2d7a63)", border: card.matched ? "3px solid #22C55E" : card.flipped ? "3px solid #D4A843" : "3px solid transparent" }}>
+            style={{ background: card.flipped || card.matched ? BG[idx % BG.length] : "linear-gradient(135deg,#c289f7,#6d32a3)", border: card.matched ? "3px solid #22C55E" : card.flipped ? "3px solid #D4A843" : "3px solid transparent" }}>
             {card.flipped || card.matched
               ? <><span className="text-3xl">{card.emoji}</span><span className="text-xs font-medium" style={{ fontFamily: "Cairo, sans-serif", color: "#2C1810" }}>{card.name}</span></>
               : <span className="text-2xl" style={{color:"white"}}>{idx + 1}</span>
@@ -135,7 +135,7 @@ function BalloonGame({ onWin }: { onWin: () => void }) {
     <div className="space-y-5" dir="rtl">
       <div className="text-center bg-card border border-border rounded-2xl p-4">
         <p className="text-lg font-medium mb-1" style={{ fontFamily: "Cairo, sans-serif", color: "#2C1810" }}>اضغط على البالون</p>
-        <div className="text-4xl font-bold" style={{ color: q.hex, fontFamily: "Amiri, serif" }}>🎈 {q.label}</div>
+        <div className="text-4xl font-bold" style={{ color: q.hex, fontFamily: "Cairo, serif" }}>🎈 {q.label}</div>
       </div>
       <div className="grid grid-cols-3 gap-4">
         {BALLOONS.map((b, i) => (
@@ -397,7 +397,7 @@ function ScratchGame({ onWin }: { onWin: () => void }) {
             whileHover={{ scale: revealed.has(i) ? 1 : 1.1 }} whileTap={{ scale: 0.85 }}
             initial={{ scale: 0.8 }} animate={{ scale: 1 }}
             className={`px-4 py-3 rounded-2xl text-lg font-medium border-2 transition-all min-w-16 shadow-sm ${revealed.has(i) ? "cursor-default border-green-400" : "cursor-pointer border-amber-400"}`}
-            style={{ background: revealed.has(i) ? "#DCFCE7" : "#1B4D3E", color: revealed.has(i) ? "#166534" : "#fff", fontFamily: "Noto Naskh Arabic, serif" }}>
+            style={{ background: revealed.has(i) ? "#DCFCE7" : "#6d32a3", color: revealed.has(i) ? "#166534" : "#fff", fontFamily: "Noto Naskh Arabic, serif" }}>
             {revealed.has(i) ? w : <span className="text-2xl">⭐</span>}
           </motion.button>
         ))}
@@ -441,7 +441,7 @@ export default function Fun() {
       <MascotCheer message={cheer} />
 
       <div className="flex items-center justify-between mb-6 max-w-2xl mx-auto">
-        <h2 className="text-2xl font-bold" style={{ fontFamily: "Amiri, serif", color: "#1B4D3E" }}>ألعاب ترفيهية 🎪</h2>
+        <h2 className="text-2xl font-bold" style={{ fontFamily: "Cairo, serif", color: "#6d32a3" }}>ألعاب ترفيهية 🎪</h2>
         <div className="flex items-center gap-2 px-4 py-2 rounded-full shadow-sm" style={{ background: "linear-gradient(135deg,#FBE3C7,#FAD9B0)", color: "#8A5A2B" }}>
           <Star size={16} /><span className="font-bold" style={{ fontFamily: "Cairo, sans-serif" }}>{score}</span>
         </div>
@@ -453,7 +453,7 @@ export default function Fun() {
             <motion.button key={g.id} whileHover={{ scale: 1.04, y: -5 }} whileTap={{ scale: 0.96 }} onClick={() => setGame(g.id)}
               className="relative overflow-hidden rounded-3xl p-6 flex flex-col gap-2 border-4 border-white cursor-pointer shadow-md" style={{ background: g.bg, color: g.fg }}>
               <div className="text-3xl">{g.emoji}</div>
-              <h3 className="text-lg font-bold" style={{ fontFamily: "Amiri, serif" }}>{g.title}</h3>
+              <h3 className="text-lg font-bold" style={{ fontFamily: "Cairo, serif" }}>{g.title}</h3>
               <p className="text-xs opacity-80" style={{ fontFamily: "Cairo, sans-serif" }}>{g.desc}</p>
             </motion.button>
           ))}
@@ -462,7 +462,7 @@ export default function Fun() {
         <div className="max-w-2xl mx-auto">
           <div className="flex items-center gap-3 mb-5">
             <button onClick={() => setGame(null)} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg hover:bg-muted text-sm" style={{ fontFamily: "Cairo, sans-serif", color: "#7A5C48" }}>← العودة</button>
-            <h3 className="font-bold text-lg" style={{ fontFamily: "Amiri, serif", color: "#1B4D3E" }}>{FUN_LIST.find(g => g.id === game)?.title}</h3>
+            <h3 className="font-bold text-lg" style={{ fontFamily: "Cairo, serif", color: "#6d32a3" }}>{FUN_LIST.find(g => g.id === game)?.title}</h3>
           </div>
           <div className="bg-card border border-border rounded-3xl p-6 shadow-sm">
             {game === "animal-memory" && <AnimalMemoryGame onWin={win} />}

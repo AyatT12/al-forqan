@@ -202,7 +202,7 @@ function YouTubeModal({ isOpen, onClose, onAdd }) {
       <motion.div initial={{ scale: 0.9, y: 20 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.9, y: 20 }}
         className="bg-white rounded-2xl p-6 max-w-md w-full shadow-2xl" onClick={e => e.stopPropagation()} dir="rtl">
         <div className="flex items-center justify-between mb-4">
-          <h3 className="text-lg font-bold" style={{ fontFamily: "Cairo,sans-serif", color: "#1B4D3E" }}>
+          <h3 className="text-lg font-bold" style={{ fontFamily: "Cairo,sans-serif", color: "#6d32a3" }}>
             <Youtube className="inline-block text-red-600 ml-2" size={20} />إضافة فيديو يوتيوب
           </h3>
           <button onClick={onClose} className="p-1 hover:bg-gray-100 rounded-lg"><X size={20} /></button>
@@ -267,7 +267,7 @@ function ResizeHandle({ onResize, isMobile }) {
 
 /* ─── BG Picker with image upload ─── */
 function BgPicker({ bgColor, bgImage, onChange, onImageBg, onClearImageBg, imgBgRef }) {
-  const BG_COLORS = ["#FDFAF4", "#FFFFFF", "#1B4D3E", "#1e293b", "#FEF9C3", "#DBEAFE", "#DCFCE7", "#FCE7F3", "#F5F0E8", "#EEF2FF", "#111827", "#7f1d1d"];
+  const BG_COLORS = ["#FDFAF4", "#FFFFFF", "#6d32a3", "#1e293b", "#FEF9C3", "#DBEAFE", "#DCFCE7", "#FCE7F3", "#F5F0E8", "#EEF2FF", "#111827", "#7f1d1d"];
   return (
     <div className="absolute top-full left-0 mt-1 p-3 bg-white border border-gray-200 rounded-xl shadow-xl z-30 w-56" dir="rtl">
       <p className="text-xs font-bold text-gray-500 mb-2" style={{ fontFamily: "Cairo,sans-serif" }}>لون الخلفية</p>
@@ -283,7 +283,7 @@ function BgPicker({ bgColor, bgImage, onChange, onImageBg, onClearImageBg, imgBg
         <div className="flex flex-col gap-2">
           <button onClick={() => imgBgRef.current?.click()}
             className="flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-bold text-white"
-            style={{ background: "#1B4D3E", fontFamily: "Cairo,sans-serif" }}>
+            style={{ background: "#6d32a3", fontFamily: "Cairo,sans-serif" }}>
             <ImageIcon size={14} /> رفع صورة خلفية
           </button>
           {bgImage && (
@@ -700,7 +700,7 @@ export default function Whiteboard() {
     ctx.stroke();
 
     ctx.font = `bold ${t.fontSize}px "Noto Naskh Arabic","Cairo",sans-serif`;
-    ctx.fillStyle = t.color || "#1B4D3E";
+    ctx.fillStyle = t.color || "#6d32a3";
     ctx.textAlign = "right";
     ctx.textBaseline = "top";
     const lines = String(t.text).split("\n");
@@ -802,7 +802,7 @@ export default function Whiteboard() {
 
   /* ── ayah copy ── */
   const copyAyahToBoard = (text) => {
-    setTextEls(prev => [...prev, { id: Date.now().toString(), x: 200 + Math.random() * 300, y: 150 + Math.random() * 200, text, color: "#1B4D3E", fontSize: 26 }]);
+    setTextEls(prev => [...prev, { id: Date.now().toString(), x: 200 + Math.random() * 300, y: 150 + Math.random() * 200, text, color: "#6d32a3", fontSize: 26 }]);
   };
 
   /* ── whole-sura copy: arrange like a moshap  page ── */
@@ -838,7 +838,7 @@ export default function Whiteboard() {
       text: lines.join("\n"),
       title: header,
       kind: "surahPage",
-      color: "#1B4D3E",
+      color: "rgb(65, 27, 77)",
       fontSize: 24,
       bgColor: "rgba(252, 247, 235, 0.96)",
       borderColor: "#C8A96B",
@@ -946,7 +946,7 @@ export default function Whiteboard() {
         </button>
         <div className="w-px h-5 bg-gray-200 mx-0.5 flex-shrink-0" />
         <button onClick={clearCanvas} title="مسح الكل" className="p-1.5 rounded-lg hover:bg-red-100 text-red-500 flex-shrink-0"><Trash2 size={18} /></button>
-        <button onClick={saveImg} title="تحميل" className="p-1.5 rounded-lg hover:bg-gray-100 flex-shrink-0" style={{ color: "#1B4D3E" }}><Download size={18} /></button>
+        <button onClick={saveImg} title="تحميل" className="p-1.5 rounded-lg hover:bg-gray-100 flex-shrink-0" style={{ color: "#6d32a3" }}><Download size={18} /></button>
       </div>
 
       <div className="flex flex-1 overflow-hidden relative">
@@ -955,7 +955,7 @@ export default function Whiteboard() {
         <div className={`${isMobile ? `fixed top-0 bottom-0 left-0 z-60 w-56 border-r border-border bg-card transition-transform duration-300 ${mobilePanelOpen === 'ayah' ? 'translate-x-0' : '-translate-x-full'}` : `${showAyahPanel ? 'w-52' : 'hidden'} border-l border-border bg-card flex-shrink-0`} overflow-y-auto flex flex-col`} dir="rtl"
           style={isMobile ? {} : {}}>
           <div className="p-2 border-b border-border">
-            <p className="text-xs font-bold mb-2" style={{ fontFamily: "Cairo,sans-serif", color: "#1B4D3E" }}>📖 القرآن الكريم</p>
+            <p className="text-xs font-bold mb-2" style={{ fontFamily: "Cairo,sans-serif", color: "#6d32a3" }}>📖 القرآن الكريم</p>
             <select value={panelSurahId} onChange={e => setPanelSurahId(+e.target.value)}
               className="w-full text-xs px-2 py-1.5 rounded-lg border border-border bg-background text-right mb-2"
               style={{ fontFamily: "Cairo,sans-serif" }} dir="rtl">
@@ -966,7 +966,7 @@ export default function Whiteboard() {
               onClick={copyWholeSurahToBoard}
               disabled={panelLoading || panelAyahs.length === 0}
               className="w-full flex items-center justify-center gap-1.5 px-2 py-2 rounded-lg text-xs font-bold text-white disabled:opacity-40 disabled:cursor-not-allowed hover:brightness-110 transition"
-              style={{ background: "#1B4D3E", fontFamily: "Cairo,sans-serif" }}
+              style={{ background: "#6d32a3", fontFamily: "Cairo,sans-serif" }}
               title="إضافة السورة كاملة إلى اللوحة">
               <BookMarked size={13} /> إضافة السورة كاملة
             </button>
@@ -974,7 +974,7 @@ export default function Whiteboard() {
           <div className="flex-1 overflow-y-auto p-2">
             {panelLoading ? <div className="flex justify-center py-8"><div className="w-6 h-6 border-2 border-primary/20 border-t-primary rounded-full animate-spin" /></div> : (
               <div className="space-y-1">
-                {panelSurahId !== 9 && <div className="text-xs text-center py-1" style={{ fontFamily: "Noto Naskh Arabic,serif", color: "#1B4D3E" }}>بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ</div>}
+                {panelSurahId !== 9 && <div className="text-xs text-center py-1" style={{ fontFamily: "Noto Naskh Arabic,serif", color: "#6d32a3" }}>بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ</div>}
                 {panelAyahs.map(a => (
                   <div key={a.number} onClick={() => copyAyahToBoard(a.text)}
                     className="rounded-lg p-2 bg-muted/40 hover:bg-emerald-50 cursor-pointer transition-colors">
@@ -1022,7 +1022,7 @@ export default function Whiteboard() {
             return (
               <div key={t.id} className="absolute" style={{ left: lx, top: ly - t.fontSize * scaleY * zoomLevel, zIndex: 6, pointerEvents: "auto" }}>
                 {editingTextId === t.id ? (
-                  <div className={`rounded-[24px] border-2 bg-[#fcf7eb]/95 p-4 shadow-[0_12px_30px_rgba(0,0,0,0.16)] ${t.kind === "surahPage" ? "min-w-[340px]" : "min-w-[140px]"}`} style={{ borderColor: t.kind === "surahPage" ? (t.borderColor || "#C8A96B") : "#1B4D3E" }}>
+                  <div className={`rounded-[24px] border-2 bg-[#fcf7eb]/95 p-4 shadow-[0_12px_30px_rgba(0,0,0,0.16)] ${t.kind === "surahPage" ? "min-w-[340px]" : "min-w-[140px]"}`} style={{ borderColor: t.kind === "surahPage" ? (t.borderColor || "#C8A96B") : "#6d32a3" }}>
                     {t.kind === "surahPage" && (
                       <div className="d-flex flex-column">
                         <div className="mb-3 flex items-center justify-center gap-2 text-amber-700">
@@ -1032,7 +1032,7 @@ export default function Whiteboard() {
                           <div className="h-px flex-1 bg-gradient-to-r from-transparent via-amber-600 to-transparent" />
                           <span>✿</span>
                         </div>
-                        <p className="text-sm font-black text-center mb-3" style={{ fontFamily: "Cairo,sans-serif" , color:"rgb(27, 77, 62)" }}>بسم الله الرحمن الرحيم</p>
+                        <p className="text-sm font-black text-center mb-3" style={{ fontFamily: "Cairo,sans-serif" , color:"rgb(65, 27, 77)" }}>بسم الله الرحمن الرحيم</p>
 
                       </div>
                     )}
@@ -1058,7 +1058,7 @@ export default function Whiteboard() {
                           <div className="h-px flex-1 bg-gradient-to-r from-transparent via-amber-600 to-transparent" />
                           <span>✿</span>
                         </div>
-                        <p className="text-sm font-black text-center mb-3" style={{ fontFamily: "Cairo,sans-serif" , color:"rgb(27, 77, 62)" }}>بسم الله الرحمن الرحيم</p>
+                        <p className="text-sm font-black text-center mb-3" style={{ fontFamily: "Cairo,sans-serif" , color:"rgb(65, 27, 77)" }}>بسم الله الرحمن الرحيم</p>
 
                       </div>
                     )}
@@ -1078,13 +1078,13 @@ export default function Whiteboard() {
             const c = mainRef.current, r = c?.getBoundingClientRect();
             const scaleX = r ? r.width / c.width : 1;
             return (
-              <div key={s.id} className="absolute group cursor-move select-none" style={{ left: lx, top: ly, zIndex: 4, fontSize: s.size * scaleX * zoomLevel, lineHeight: 1, pointerEvents: "auto" }}
+              <div key={s.id} className="absolute group cursor-move select-none" style={{ left: lx, top: ly, zIndex: 4, fontSize: 50, lineHeight: 1, pointerEvents: "auto" }}
                 onMouseDown={e => { e.stopPropagation(); setDragEl({ type: "stamp", id: s.id, mx: e.clientX, my: e.clientY, ex: s.x, ey: s.y }); }}
                 onTouchStart={e => { e.stopPropagation(); const touch = e.touches[0]; setDragEl({ type: "stamp", id: s.id, mx: touch.clientX, my: touch.clientY, ex: s.x, ey: s.y }); }}>
                 {s.emoji}
                 <button onClick={e => { e.stopPropagation(); setStamps(p => p.filter(ss => ss.id !== s.id)); }}
                   className="absolute -top-2 -right-1 bg-red-500 text-white rounded-full text-xs flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
-                  style={isMobile ? { width: 32, height: 32, fontSize: 16, opacity: 0.8 } : { width: 20, height: 20, fontSize: 11 }}>✕</button>
+                  style={isMobile ? { width: 18, height: 18, fontSize: 10, opacity: 0.8 } : { width: 20, height: 20, fontSize: 11 }}>✕</button>
               </div>
             );
           })}
@@ -1102,7 +1102,7 @@ export default function Whiteboard() {
                 style={{
                   left: lx, top: ly, zIndex: 2,
                   width: dispW, height: dispH,
-                  border: isSelected ? "2px solid #1B4D3E" : "2px solid transparent",
+                  border: isSelected ? "2px solid #6d32a3" : "2px solid transparent",
                   borderRadius: 4,
                   cursor: "move", pointerEvents: "auto",
                   boxShadow: isSelected ? "0 0 0 3px rgba(27,77,62,0.25)" : "0 2px 8px rgba(0,0,0,0.15)",
@@ -1152,7 +1152,7 @@ export default function Whiteboard() {
 
                 <button onClick={e => { e.stopPropagation(); setImageEls(p => p.map(im => im.id === img.id ? { ...im, locked: !im.locked } : im)); }}
                   className="absolute top-0 left-0 w-6 h-6 rounded-br-lg opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-xs shadow-md"
-                  style={{ background: img.locked ? "#1B4D3E" : "rgba(0,0,0,0.5)", color: "white" }}
+                  style={{ background: img.locked ? "#6d32a3" : "rgba(0,0,0,0.5)", color: "white" }}
                   title={img.locked ? "فتح النسبة" : "قفل النسبة"}>
                   {img.locked ? "🔒" : "🔓"}
                 </button>
@@ -1274,11 +1274,11 @@ export default function Whiteboard() {
           <div className="p-2 border-b border-border space-y-2">
             <div>
               <p className="text-xs text-gray-500 mb-1 font-semibold" style={{ fontFamily: "Cairo,sans-serif" }}>الحجم: <span>{strokeWidth}</span>px</p>
-              <input type="range" min={1} max={30} value={strokeWidth} onChange={e => setStrokeWidth(+e.target.value)} className="w-full h-1" style={{ accentColor: "#1B4D3E" }} />
+              <input type="range" min={1} max={30} value={strokeWidth} onChange={e => setStrokeWidth(+e.target.value)} className="w-full h-1" style={{ accentColor: "#6d32a3" }} />
             </div>
             <div>
               <p className="text-xs text-gray-500 mb-1 font-semibold" style={{ fontFamily: "Cairo,sans-serif" }}>شفافية: <span>{opacity}</span>%</p>
-              <input type="range" min={10} max={100} value={opacity} onChange={e => setOpacity(+e.target.value)} className="w-full h-1" style={{ accentColor: "#1B4D3E" }} />
+              <input type="range" min={10} max={100} value={opacity} onChange={e => setOpacity(+e.target.value)} className="w-full h-1" style={{ accentColor: "#6d32a3" }} />
             </div>
           </div>
 

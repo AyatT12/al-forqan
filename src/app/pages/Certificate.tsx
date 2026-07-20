@@ -43,16 +43,16 @@ const TEMPLATES: Template[] = [
     hasImage: true,
     icon: <Crown size={16} />,
     colors: {
-      primary: "#1B4D3E",
+      primary: "#6d32a3",
       secondary: "#C17A5C",
       accent: "#D4A843",
       text: "#2C1810",
       background: ["#FDF8F0", "#F5EDE0"],
       border: "#D4A843",
-      highlight: "#1B4D3E",
+      highlight: "#6d32a3",
     },
     fonts: {
-      title: "Amiri, serif",
+      title: "Cairo, serif",
       body: "Cairo, sans-serif",
       arabic: "Noto Naskh Arabic, serif",
     },
@@ -92,62 +92,7 @@ const TEMPLATES: Template[] = [
     },
     style: 'modern',
   },
-  // 3. ملكي فاخر
-  {
-    id: "royal-premium",
-    name: "ملكي فاخر",
-    hasImage: true,
-    icon: <Award size={16} />,
-    colors: {
-      primary: "#6C0E23",
-      secondary: "#8B1A3A",
-      accent: "#C9A84C",
-      text: "#2C1810",
-      background: ["#FFF8F0", "#F5E6D8"],
-      border: "#C9A84C",
-      highlight: "#6C0E23",
-    },
-    fonts: {
-      title: "Amiri, serif",
-      body: "Cairo, sans-serif",
-      arabic: "Noto Naskh Arabic, serif",
-    },
-    decorations: {
-      corners: true,
-      borders: true,
-      watermark: true,
-      pattern: 'stars',
-    },
-    style: 'royal',
-  },
-  // 4. طبيعي هادئ
-  {
-    id: "nature-calm",
-    name: "طبيعي هادئ",
-    hasImage: true,
-    icon: <Heart size={16} />,
-    colors: {
-      primary: "#1B5E20",
-      secondary: "#2E7D32",
-      accent: "#66BB6A",
-      text: "#1B3A1B",
-      background: ["#F1F8E9", "#DCEDC8"],
-      border: "#2E7D32",
-      highlight: "#1B5E20",
-    },
-    fonts: {
-      title: "Amiri, serif",
-      body: "Cairo, sans-serif",
-      arabic: "Noto Naskh Arabic, serif",
-    },
-    decorations: {
-      corners: true,
-      borders: true,
-      watermark: false,
-      pattern: 'lines',
-    },
-    style: 'nature',
-  },
+ 
   // 5. بسيط نظيف (بدون صورة)
   {
     id: "simple-clean",
@@ -164,7 +109,7 @@ const TEMPLATES: Template[] = [
       highlight: "#374151",
     },
     fonts: {
-      title: "Amiri, serif",
+      title: "Cairo, serif",
       body: "Cairo, sans-serif",
       arabic: "Noto Naskh Arabic, serif",
     },
@@ -192,7 +137,7 @@ const TEMPLATES: Template[] = [
       highlight: "#6C3483",
     },
     fonts: {
-      title: "Amiri, serif",
+      title: "Cairo, serif",
       body: "Cairo, sans-serif",
       arabic: "Noto Naskh Arabic, serif",
     },
@@ -220,7 +165,7 @@ const TEMPLATES: Template[] = [
       highlight: "#1A237E",
     },
     fonts: {
-      title: "Amiri, serif",
+      title: "Cairo, serif",
       body: "Cairo, sans-serif",
       arabic: "Noto Naskh Arabic, serif",
     },
@@ -248,7 +193,7 @@ const TEMPLATES: Template[] = [
       highlight: "#880E4F",
     },
     fonts: {
-      title: "Amiri, serif",
+      title: "Cairo, serif",
       body: "Cairo, sans-serif",
       arabic: "Noto Naskh Arabic, serif",
     },
@@ -332,7 +277,7 @@ function ImageUploadModal({
         dir="rtl"
       >
         <div className="flex items-center justify-between mb-4">
-          <h3 className="text-lg font-bold" style={{ fontFamily: "Cairo, sans-serif", color: "#1B4D3E" }}>
+          <h3 className="text-lg font-bold" style={{ fontFamily: "Cairo, sans-serif", color: "#6d32a3" }}>
             <Upload className="inline-block ml-2" size={20} />
             رفع صورة للشهادة
           </h3>
@@ -459,7 +404,7 @@ function CertPreview({
     if (decorations.pattern === 'stars') {
       return (
         <div className="absolute inset-0 pointer-events-none opacity-5">
-          <div className="absolute top-1/4 left-1/4 text-6xl">✦</div>
+          <div className="absolute top-1/4 left-1/4 text-5xl">✦</div>
           <div className="absolute bottom-1/4 right-1/4 text-4xl">✦</div>
           <div className="absolute top-1/3 right-1/3 text-5xl">✦</div>
         </div>
@@ -537,7 +482,7 @@ function CertPreview({
         )}
         
         <div className="font-bold" style={{ color: colors.primary, fontSize: "clamp(0.85rem,2.2vw,1.3rem)" }}>
-          شهادة تقدير وتحفيظ
+          شهادة تقدير 
         </div>
         
         <div className="flex items-center gap-2 w-36">
@@ -778,7 +723,7 @@ export default function Certificate() {
 
     ctx.fillStyle = colors.primary;
     ctx.font = `bold ${style === 'royal' ? '78px' : '68px'} "${fonts.title}"`;
-    ctx.fillText("شهادة تقدير وتحفيظ", W/2, 190 + yOffset);
+    ctx.fillText("شهادة تقدير ", W/2, 190 + yOffset);
 
     // خط فاصل
     ctx.strokeStyle = colors.accent;
@@ -864,7 +809,7 @@ export default function Certificate() {
 
   return (
     <div className="p-5 lg:p-8 max-w-6xl mx-auto" dir="rtl">
-      <h2 className="text-2xl font-bold mb-6" style={{ fontFamily: "Amiri, serif", color: "#1B4D3E" }}>
+      <h2 className="text-2xl font-bold mb-6" style={{ fontFamily: "Cairo, serif", color: "#6d32a3" }}>
         شهادات التقدير - قوالب متعددة
       </h2>
       
@@ -947,7 +892,7 @@ export default function Certificate() {
                 value={surahName}
                 onChange={e => setSurahName(e.target.value)}
                 className="w-full px-4 py-2.5 rounded-xl border border-border bg-background focus:outline-none focus:ring-2 focus:border-primary text-right"
-                style={{ fontFamily: "Amiri, serif", color: "#2C1810" }}
+                style={{ fontFamily: "Cairo, serif", color: "#2C1810" }}
                 dir="rtl"
               >
                 {SURAHS.map(s => <option key={s.id} value={s.name}>{s.name}</option>)}
@@ -994,21 +939,11 @@ export default function Certificate() {
               <><Download size={18} /> تحميل الشهادة PNG</>
             )}
           </motion.button>
-
-          <div className="flex items-center justify-between text-xs text-muted-foreground px-1">
-            <span style={{ fontFamily: "Cairo, sans-serif" }}>
-              <Palette size={14} className="inline ml-1" />
-              القالب: {selectedTemplate.name}
-            </span>
-            <span style={{ fontFamily: "Cairo, sans-serif" }}>
-              {customImage ? '📷 مع صورة' : selectedTemplate.hasImage ? '📷 مع صورة افتراضية' : '📝 بدون صورة'}
-            </span>
-          </div>
         </div>
 
         {/* المعاينة */}
         <div>
-          <p className="font-bold text-base mb-3" style={{ fontFamily: "Amiri, serif", color: "#2C1810" }}>
+          <p className="font-bold text-base mb-3" style={{ fontFamily: "Cairo, serif", color: "#2C1810" }}>
             معاينة الشهادة
           </p>
           <div className="rounded-2xl overflow-hidden border border-border shadow-sm transition-all">
@@ -1021,18 +956,6 @@ export default function Certificate() {
               template={selectedTemplate}
               customImage={customImage}
             />
-          </div>
-          
-          <div className="mt-3 flex items-center justify-between text-xs text-muted-foreground px-1">
-            <span style={{ fontFamily: "Cairo, sans-serif" }}>
-              {selectedTemplate.decorations.corners ? "✨ مزخرف" : "🔲 بسيط"}
-            </span>
-            <span style={{ fontFamily: "Cairo, sans-serif" }}>
-              {selectedTemplate.style === 'modern' ? '🎨 عصري' : 
-               selectedTemplate.style === 'royal' ? '👑 ملكي' :
-               selectedTemplate.style === 'nature' ? '🌿 طبيعي' :
-               selectedTemplate.style === 'elegant' ? '💎 أنيق' : '📜 كلاسيكي'}
-            </span>
           </div>
         </div>
       </div>
