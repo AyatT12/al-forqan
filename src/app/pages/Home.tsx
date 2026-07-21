@@ -15,7 +15,7 @@ import logo from "../../Assets/images/Logo.png";
 import kidBoy from "../../Assets/images/kid-boy.png";
 import kidGirl from "../../Assets/images/kid-girl.png";
 import mosque from "../../Assets/images/mosque.png";
-import heroVideo from "../../Assets/video/Animated cartoon style video showing female teacher wearing hijab teaching Tajweed rules to young children, pointing at Quran verses, warm educational setting, colorful animation.mp4";
+import heroVideo from "../../Assets/video/Hero-teacher1.mp4";
 
 const FEATURES = [
   {
