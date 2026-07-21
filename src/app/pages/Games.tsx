@@ -2,6 +2,7 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Star, RotateCcw, Shuffle, Volume2, BookOpen, ChevronDown, Check, X, Plus, Trash2 } from "lucide-react";
+import videoSrc from "../../Assets/video/hero-teacher-kid.mp4";
 
 // ─── TYPES ───────────────────────────────────────────
 interface Surah {
@@ -1226,7 +1227,6 @@ export default function Games() {
   const [totalWins, setTotalWins] = useState<number>(0);
 
   // Replace with your actual video URL
-  const videoSrc = "/src/Assets/video/hero-teacher-kid.mp4";
 
   const win = (): void => {
     setScore(s => s + 10); 
