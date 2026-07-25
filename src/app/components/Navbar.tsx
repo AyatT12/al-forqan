@@ -24,8 +24,7 @@ export default function Navbar() {
     <header
       className="relative z-50 flex-shrink-0  border-white"
       style={{
-        background:
-          "linear-gradient(120deg, color-mix(in oklab, var(--kid-teal) 88%, white) 0%, color-mix(in oklab, var(--kid-grape) 78%, white) 100%)",
+        background:"var(--kid-grape)"
       }}
     >
       <div

@@ -99,7 +99,6 @@ export default function Mascot() {
           )}
         </AnimatePresence>
 
-        {/* Confetti sparkles on celebrate */}
         <AnimatePresence>
           {celebrate && (
             <>
@@ -112,7 +111,7 @@ export default function Mascot() {
                   animate={{ y: -180 - Math.random() * 80, opacity: 0, scale: 1.2 }}
                   transition={{ duration: 1.2, delay: i * 0.04 }}
                 >
-                  {["⭐","✨","🌟","💫"][i % 4]}
+                  {["⭐","🌟","💫"][i % 4]}
                 </motion.div>
               ))}
             </>

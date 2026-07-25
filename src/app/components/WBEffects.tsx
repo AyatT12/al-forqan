@@ -69,7 +69,7 @@ export function StarCelebrationOverlay({ onDone }: { onDone: () => void }) {
     return () => clearTimeout(t);
   }, [onDone]);
 
-  const starEmojis = ["⭐", "🌟", "✨", "💫"];
+  const starEmojis = ["⭐", "🌟", "💫"];
 
   return (
     <div className="absolute inset-0 pointer-events-none overflow-hidden z-20 flex items-center justify-center">
@@ -134,7 +134,7 @@ export function Curtain({ visible, onReveal }: { visible: boolean; onReveal: () 
       style={{
         transform: visible ? "translateY(0)" : "translateY(-100%)",
         transition: "transform 0.75s cubic-bezier(0.4,0,0.2,1)",
-        background: "linear-gradient(180deg,rgb(65, 27, 77) 0%,rgb(14, 45, 35) 100%)",
+        background: "linear-gradient(180deg,var(--kid-teal) 0%,rgb(14, 45, 35) 100%)",
         pointerEvents: visible ? "auto" : "none",
       }}
     >

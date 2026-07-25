@@ -1,7 +1,7 @@
 // @ts-nocheck
 import { motion } from "motion/react";
 
-const EMOJIS = ["🎉","⭐","🌟","✨","🎊","🏆","💛","🎈","🌈","👏","🎀","💫"];
+const EMOJIS = ["🎉","⭐","🌟","🎊","🏆","💛","🎈","🌈","👏","🎀","💫"];
 
 export default function Confetti({ message }: { message: string }) {
   const items = Array.from({ length: 22 }, (_, i) => ({
@@ -33,7 +33,7 @@ export default function Confetti({ message }: { message: string }) {
         <div
           className="text-2xl lg:text-3xl font-bold px-8 py-5 rounded-3xl text-white shadow-2xl text-center"
           style={{
-            background: "linear-gradient(135deg,#6d32a3,#2d7a63)",
+            background: "linear-gradient(135deg,var(--kid-teal),#2d7a63)",
             fontFamily: "Cairo, serif",
             maxWidth: "80vw",
           }}
