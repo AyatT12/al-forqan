@@ -43,13 +43,13 @@ const TEMPLATES: Template[] = [
     hasImage: true,
     icon: <Crown size={16} />,
     colors: {
-      primary: "#6d32a3",
+      primary: "var(--kid-teal)",
       secondary: "#C17A5C",
       accent: "#D4A843",
       text: "#2C1810",
       background: ["#FDF8F0", "#F5EDE0"],
       border: "#D4A843",
-      highlight: "#6d32a3",
+      highlight: "var(--kid-teal)",
     },
     fonts: {
       title: "Cairo, serif",
@@ -69,7 +69,6 @@ const TEMPLATES: Template[] = [
     id: "modern-elegant",
     name: "عصري أنيق",
     hasImage: true,
-    icon: <Sparkles size={16} />,
     colors: {
       primary: "#2D3436",
       secondary: "#6C5CE7",
@@ -277,7 +276,7 @@ function ImageUploadModal({
         dir="rtl"
       >
         <div className="flex items-center justify-between mb-4">
-          <h3 className="text-lg font-bold" style={{ fontFamily: "Cairo, sans-serif", color: "#6d32a3" }}>
+          <h3 className="text-lg font-bold" style={{ fontFamily: "Cairo, sans-serif", color: "var(--kid-teal)" }}>
             <Upload className="inline-block ml-2" size={20} />
             رفع صورة للشهادة
           </h3>
@@ -809,7 +808,7 @@ export default function Certificate() {
 
   return (
     <div className="p-5 lg:p-8 max-w-6xl mx-auto" dir="rtl">
-      <h2 className="text-2xl font-bold mb-6" style={{ fontFamily: "Cairo, serif", color: "#6d32a3" }}>
+      <h2 className="text-2xl font-bold mb-6" style={{ fontFamily: "Cairo, serif", color: "var(--kid-teal)" }}>
         شهادات التقدير - قوالب متعددة
       </h2>
       

@@ -13,70 +13,159 @@ export default function Quran() {
   const [playing, setPlaying] = useState(false);
   const [repeat, setRepeat] = useState(false);
   const [showList, setShowList] = useState(false);
+  const [selectedAyahNumber, setSelectedAyahNumber] = useState<string>("");
+  const [filteredAyahs, setFilteredAyahs] = useState<any[]>([]);
   const audioRef = useRef<HTMLAudioElement>(null);
 
   useEffect(() => { fetchSurah(1); }, []);
 
- const fetchSurah = async (id: number) => {
-  setLoading(true);
-  setAyahs([]);
-  setCurAyah(0);
-  setPlaying(false);
-
-  if (audioRef.current) {
-    audioRef.current.pause();
-    audioRef.current.currentTime = 0;
-  }
-
-  try {
-    let allVerses: any[] = [];
-    let page = 1;
-    let totalPages = 1;
-
-    do {
-      const res = await fetch(
-        `https://api.quran.com/api/v4/verses/by_chapter/${id}?language=ar&words=false&fields=text_uthmani&per_page=50&page=${page}`
-      );
-
-      if (!res.ok) {
-        throw new Error(`HTTP ${res.status}`);
-      }
-
-      const data = await res.json();
-
-      allVerses.push(...(data.verses ?? []));
-
-      totalPages = data.pagination?.total_pages ?? 1;
-      page++;
-    } while (page <= totalPages);
-
-    const mapped = allVerses.map((verse: any) => ({
-      number: verse.id,
-      numberInSurah: verse.verse_number,
-      text: verse.text_uthmani,
-    }));
-
-    setAyahs(mapped);
-  } catch (err) {
-    console.error("Failed to load surah:", err);
+  const fetchSurah = async (id: number) => {
+    setLoading(true);
     setAyahs([]);
-  }
+    setFilteredAyahs([]);
+    setCurAyah(0);
+    setPlaying(false);
+    setSelectedAyahNumber("");
 
-  setLoading(false);
-};
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.currentTime = 0;
+    }
+
+    try {
+      let allVerses: any[] = [];
+      let page = 1;
+      let totalPages = 1;
+
+      do {
+        const res = await fetch(
+          `https://api.quran.com/api/v4/verses/by_chapter/${id}?language=ar&words=false&fields=text_uthmani&per_page=50&page=${page}`
+        );
+
+        if (!res.ok) {
+          throw new Error(`HTTP ${res.status}`);
+        }
+
+        const data = await res.json();
+
+        allVerses.push(...(data.verses ?? []));
+
+        totalPages = data.pagination?.total_pages ?? 1;
+        page++;
+      } while (page <= totalPages);
+
+      const mapped = allVerses.map((verse: any) => ({
+        number: verse.id,
+        numberInSurah: verse.verse_number,
+        text: verse.text_uthmani,
+      }));
+
+      setAyahs(mapped);
+      setFilteredAyahs(mapped);
+    } catch (err) {
+      console.error("Failed to load surah:", err);
+      setAyahs([]);
+      setFilteredAyahs([]);
+    }
+
+    setLoading(false);
+  };
+
+  // دالة البحث عن طريق الاختيار من القائمة - فقط تعرض الآية بدون تشغيل
+  const handleAyahSelect = useCallback((ayahNumber: string) => {
+    setSelectedAyahNumber(ayahNumber);
+    
+    // إيقاف الصوت إذا كان مشغلاً
+    if (audioRef.current && playing) {
+      audioRef.current.pause();
+      audioRef.current.currentTime = 0;
+      setPlaying(false);
+    }
+    
+    if (!ayahNumber) {
+      setFilteredAyahs(ayahs);
+      setCurAyah(0);
+      return;
+    }
+
+    const searchNumber = parseInt(ayahNumber, 10);
+    
+    // البحث عن الآية المحددة
+    const filtered = ayahs.filter(ayah => 
+      ayah.numberInSurah === searchNumber
+    );
+    
+    setFilteredAyahs(filtered);
+    
+    // العثور على الآية في القائمة الأصلية وتحديد موقعها (بدون تشغيل)
+    if (filtered.length === 1) {
+      const index = ayahs.findIndex(ayah => ayah.numberInSurah === searchNumber);
+      if (index !== -1) {
+        setCurAyah(index);
+        // لا نقوم بتشغيل الصوت هنا
+      }
+    }
+  }, [ayahs, playing]);
+
+  // تصفية الآيات بناءً على الاختيار
+  const displayedAyahs = selectedAyahNumber ? filteredAyahs : ayahs;
 
   const playAyah = useCallback((idx: number) => {
-    if (!audioRef.current || !ayahs[idx]) return;
-    setCurAyah(idx); setPlaying(true);
-    audioRef.current.src = getAudioUrl(selSurah, ayahs[idx].numberInSurah);
+    const targetAyahs = selectedAyahNumber ? filteredAyahs : ayahs;
+    if (!audioRef.current || !targetAyahs[idx]) return;
+    
+    // الحصول على رقم الآية الحقيقي من القائمة المعروضة
+    const ayahNumber = targetAyahs[idx].numberInSurah;
+    // العثور على الفهرس الحقيقي في قائمة الآيات الكاملة
+    const realIndex = ayahs.findIndex(ayah => ayah.numberInSurah === ayahNumber);
+    
+    setCurAyah(realIndex !== -1 ? realIndex : idx);
+    setPlaying(true);
+    audioRef.current.src = getAudioUrl(selSurah, ayahNumber);
     audioRef.current.play().catch(() => setPlaying(false));
-  }, [ayahs, selSurah]);
+  }, [ayahs, filteredAyahs, selSurah, selectedAyahNumber]);
 
   const handleEnded = useCallback(() => {
-    if (repeat) audioRef.current?.play();
-    else if (curAyah < ayahs.length - 1) playAyah(curAyah + 1);
-    else setPlaying(false);
-  }, [repeat, curAyah, ayahs.length, playAyah]);
+    if (repeat) {
+      audioRef.current?.play();
+      return;
+    }
+    
+    // إذا كان هناك بحث نشط، ننتقل للآية التالية في النتائج المصفاة
+    if (selectedAyahNumber) {
+      const currentDisplayIndex = filteredAyahs.findIndex(ayah => ayah.numberInSurah === ayahs[curAyah]?.numberInSurah);
+      if (currentDisplayIndex !== -1 && currentDisplayIndex < filteredAyahs.length - 1) {
+        const nextAyah = filteredAyahs[currentDisplayIndex + 1];
+        const nextRealIndex = ayahs.findIndex(ayah => ayah.numberInSurah === nextAyah.numberInSurah);
+        if (nextRealIndex !== -1) {
+          playAyah(currentDisplayIndex + 1);
+          return;
+        }
+      }
+      setPlaying(false);
+      return;
+    }
+    
+    // الوضع العادي
+    if (curAyah < ayahs.length - 1) {
+      playAyah(curAyah + 1);
+    } else {
+      setPlaying(false);
+    }
+  }, [repeat, curAyah, ayahs, filteredAyahs, playAyah, selectedAyahNumber]);
+
+  // دالة لإعادة تعيين البحث
+  const clearSearch = () => {
+    setSelectedAyahNumber("");
+    setFilteredAyahs(ayahs);
+    setCurAyah(0);
+    // إيقاف الصوت عند إلغاء البحث
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.currentTime = 0;
+      setPlaying(false);
+    }
+  };
 
   return (
     <div className="flex flex-col h-full" dir="rtl">
@@ -86,7 +175,7 @@ export default function Quran() {
       <div className="p-4 lg:p-6 border-b border-border bg-card flex-shrink-0">
         <div className="max-w-3xl mx-auto">
           <div className="flex items-center gap-3 mb-4">
-            <h2 className="text-xl font-bold" style={{ fontFamily: "Cairo, serif", color: "#411b4d" }}>
+            <h2 className="text-xl font-bold" style={{ fontFamily: "Cairo, serif", color: "var(--kid-teal)" }}>
               القرآن الكريم
             </h2>
             <span
@@ -102,7 +191,7 @@ export default function Quran() {
             <button
               onClick={() => setShowList(v => !v)}
               className="w-full flex items-center justify-between px-4 py-3 bg-background border border-border rounded-xl hover:border-primary/50 transition-colors"
-              style={{ fontFamily: "Cairo, serif", color: "#411b4d" }}
+              style={{ fontFamily: "Cairo, serif", color: "var(--kid-teal)" }}
             >
               <div className="flex items-center gap-3">
                 <span
@@ -123,7 +212,7 @@ export default function Quran() {
                     key={s.id}
                     onClick={() => { setSelSurah(s.id); setShowList(false); fetchSurah(s.id); }}
                     className={`w-full flex items-center gap-3 px-4 py-2.5 hover:bg-muted text-right transition-colors ${selSurah === s.id ? "bg-primary/10" : ""}`}
-                    style={{ fontFamily: "Cairo, serif", color: selSurah === s.id ? "#411b4d" : "#2C1810" }}
+                    style={{ fontFamily: "Cairo, serif", color: selSurah === s.id ? "var(--kid-teal)" : "#2C1810" }}
                   >
                     <span className="text-xs w-8 text-center" style={{ fontFamily: "Cairo, sans-serif", color: "#7A5C48" }}>{s.id}</span>
                     <span>{s.name}</span>
@@ -131,6 +220,35 @@ export default function Quran() {
                   </button>
                 ))}
               </div>
+            )}
+          </div>
+
+          {/* Ayah number selector - قائمة منسدلة لاختيار رقم الآية */}
+          <div className="relative mt-3">
+            <select
+              value={selectedAyahNumber}
+              onChange={(e) => handleAyahSelect(e.target.value)}
+              className="w-full px-4 py-2.5 rounded-xl border border-border bg-background focus:outline-none focus:border-primary/50 transition-colors appearance-none"
+              style={{ fontFamily: "Cairo, sans-serif" }}
+              dir="rtl"
+            >
+              <option value="">-- اختر رقم الآية --</option>
+              {ayahs.map((ayah) => (
+                <option key={ayah.number} value={ayah.numberInSurah}>
+                  الآية {ayah.numberInSurah}
+                </option>
+              ))}
+            </select>
+            <div className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none">
+              <ChevronDown size={18} className="text-muted-foreground" />
+            </div>
+            {selectedAyahNumber && (
+              <button
+                onClick={clearSearch}
+                className="absolute left-10 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+              >
+                <span className="text-sm">✕</span>
+              </button>
             )}
           </div>
         </div>
@@ -143,26 +261,42 @@ export default function Quran() {
             <div className="flex justify-center py-24">
               <div className="w-10 h-10 border-4 border-primary/20 border-t-primary rounded-full animate-spin" />
             </div>
+          ) : displayedAyahs.length === 0 ? (
+            <div className="text-center py-24 text-muted-foreground" style={{ fontFamily: "Cairo, sans-serif" }}>
+              {selectedAyahNumber ? `لا توجد آية برقم ${selectedAyahNumber} في هذه السورة` : "لا توجد آيات"}
+            </div>
           ) : (
             <div className="space-y-3">
-              {selSurah !== 9 && (
-                <div className="text-center py-5 border-b border-border" style={{ fontFamily: "Noto Naskh Arabic, serif", fontSize: "1.3rem", color: "#411b4d" }}>
+              {selSurah !== 9 && !selectedAyahNumber && (
+                <div className="text-center py-5 border-b border-border" style={{ fontFamily: "Noto Naskh Arabic, serif", fontSize: "1.3rem", color: "var(--kid-teal)" }}>
                   بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ
                 </div>
               )}
-              {ayahs.map((ayah, idx) => {
-                const active = curAyah === idx && playing;
+              {displayedAyahs.map((ayah, idx) => {
+                // التحقق مما إذا كانت هذه الآية هي الآية المشغلة حالياً
+                const isCurrentAyah = ayahs[curAyah]?.numberInSurah === ayah.numberInSurah;
+                const active = isCurrentAyah && playing;
+                const isSelected = selectedAyahNumber && ayah.numberInSurah === parseInt(selectedAyahNumber, 10);
+                
                 return (
                   <motion.div
                     key={ayah.number}
                     whileHover={{ scale: 1.005 }}
                     onClick={() => playAyah(idx)}
-                    className={`relative overflow-hidden rounded-2xl p-5 cursor-pointer transition-all border ${active ? "border-amber-400 bg-amber-50" : "border-border bg-card hover:border-primary/30"}`}
+                    className={`relative overflow-hidden rounded-2xl p-5 cursor-pointer transition-all border ${
+                      active || isSelected
+                        ? "border-amber-400 bg-amber-50" 
+                        : "border-border bg-card hover:border-primary/30"
+                    }`}
                   >
                     <div className="flex items-start gap-4">
                       <div
                         className="flex-shrink-0 w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold"
-                        style={{ background: active ? "#D4A843" : "#411b4d", color: "white", fontFamily: "Cairo, sans-serif" }}
+                        style={{ 
+                          background: (active || isSelected) ? "#D4A843" : "var(--kid-teal)", 
+                          color: "white", 
+                          fontFamily: "Cairo, sans-serif" 
+                        }}
                       >
                         {ayah.numberInSurah}
                       </div>
@@ -170,10 +304,11 @@ export default function Quran() {
                         className="flex-1 text-right leading-loose"
                         style={{ fontFamily: "Noto Naskh Arabic, serif", color: "#2C1810", fontSize: "1.2rem" }}
                       >
-                        {ayah.text} <span style={{ color: "#D4A843" }}>﴿{ayah.numberInSurah}﴾</span>
+                        {ayah.text}
+                        <span style={{ color: "#D4A843" }}>﴿{ayah.numberInSurah}﴾</span>
                       </p>
                     </div>
-                    {active && (
+                    {(active || isSelected) && (
                       <div className="absolute left-4 top-1/2 -translate-y-1/2 flex gap-0.5 items-end">
                         {[0, 1, 2].map(i => (
                           <div
@@ -183,6 +318,9 @@ export default function Quran() {
                           />
                         ))}
                       </div>
+                    )}
+                    {isSelected && !active && (
+                      <div className="absolute inset-0 bg-amber-50/30 pointer-events-none rounded-2xl" />
                     )}
                   </motion.div>
                 );
@@ -196,26 +334,74 @@ export default function Quran() {
       <div className="border-t border-border bg-card p-4 flex-shrink-0">
         <div className="max-w-3xl mx-auto flex items-center justify-center gap-5">
           <button
-            onClick={() => curAyah > 0 && playAyah(curAyah - 1)}
-            disabled={curAyah === 0 || !ayahs.length}
+            onClick={() => {
+              if (selectedAyahNumber) {
+                // التنقل في الآيات المصفاة
+                const currentDisplayIndex = filteredAyahs.findIndex(ayah => ayah.numberInSurah === ayahs[curAyah]?.numberInSurah);
+                if (currentDisplayIndex > 0) {
+                  playAyah(currentDisplayIndex - 1);
+                }
+              } else if (curAyah > 0) {
+                playAyah(curAyah - 1);
+              }
+            }}
+            disabled={(() => {
+              if (selectedAyahNumber) {
+                const currentDisplayIndex = filteredAyahs.findIndex(ayah => ayah.numberInSurah === ayahs[curAyah]?.numberInSurah);
+                return currentDisplayIndex <= 0;
+              }
+              return curAyah === 0;
+            })() || !ayahs.length}
             className="p-2 rounded-full hover:bg-muted disabled:opacity-30 transition-colors"
           >
-            <SkipForward size={20} style={{ color: "#411b4d" }} />
+            <SkipForward size={20} style={{ color: "var(--kid-teal)" }} />
           </button>
+          
           <button
-            onClick={() => playing ? (audioRef.current?.pause(), setPlaying(false)) : playAyah(curAyah)}
+            onClick={() => {
+              if (playing) {
+                audioRef.current?.pause();
+                setPlaying(false);
+              } else {
+                // تشغيل الآية الحالية
+                const targetIdx = selectedAyahNumber ? 
+                  filteredAyahs.findIndex(ayah => ayah.numberInSurah === ayahs[curAyah]?.numberInSurah) :
+                  curAyah;
+                if (targetIdx !== -1) {
+                  playAyah(targetIdx);
+                }
+              }
+            }}
             className="w-14 h-14 rounded-full flex items-center justify-center text-white shadow-lg hover:scale-105 transition-transform"
-            style={{ background: "#411b4d" }}
+            style={{ background: "var(--kid-teal)" }}
           >
             {playing ? <Pause size={22} /> : <Play size={22} className="mr-[-2px]" />}
           </button>
+          
           <button
-            onClick={() => curAyah < ayahs.length - 1 && playAyah(curAyah + 1)}
-            disabled={curAyah >= ayahs.length - 1 || !ayahs.length}
+            onClick={() => {
+              if (selectedAyahNumber) {
+                // التنقل في الآيات المصفاة
+                const currentDisplayIndex = filteredAyahs.findIndex(ayah => ayah.numberInSurah === ayahs[curAyah]?.numberInSurah);
+                if (currentDisplayIndex !== -1 && currentDisplayIndex < filteredAyahs.length - 1) {
+                  playAyah(currentDisplayIndex + 1);
+                }
+              } else if (curAyah < ayahs.length - 1) {
+                playAyah(curAyah + 1);
+              }
+            }}
+            disabled={(() => {
+              if (selectedAyahNumber) {
+                const currentDisplayIndex = filteredAyahs.findIndex(ayah => ayah.numberInSurah === ayahs[curAyah]?.numberInSurah);
+                return currentDisplayIndex >= filteredAyahs.length - 1;
+              }
+              return curAyah >= ayahs.length - 1;
+            })() || !ayahs.length}
             className="p-2 rounded-full hover:bg-muted disabled:opacity-30 transition-colors"
           >
-            <SkipBack size={20} style={{ color: "#411b4d" }} />
+            <SkipBack size={20} style={{ color: "var(--kid-teal)" }} />
           </button>
+          
           <button
             onClick={() => setRepeat(r => !r)}
             className={`p-2 rounded-full transition-colors ${repeat ? "bg-amber-100 text-amber-600" : "hover:bg-muted text-muted-foreground"}`}
@@ -225,7 +411,10 @@ export default function Quran() {
         </div>
         {ayahs.length > 0 && (
           <p className="text-center mt-2 text-xs text-muted-foreground" style={{ fontFamily: "Cairo, sans-serif" }}>
-            الآية {curAyah + 1} من {ayahs.length}
+            {selectedAyahNumber 
+              ? `الآية ${filteredAyahs.findIndex(ayah => ayah.numberInSurah === ayahs[curAyah]?.numberInSurah) + 1} من ${filteredAyahs.length} (مصفاة)`
+              : `الآية ${curAyah + 1} من ${ayahs.length}`
+            }
           </p>
         )}
       </div>

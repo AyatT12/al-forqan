@@ -4,12 +4,12 @@ import { motion } from "motion/react";
 import {
   BookOpen,
   Gamepad2,
-  Sparkles,
   Award,
   Pencil,
   Heart,
   Star,
   Sun,
+  Balloon,
 } from "lucide-react";
 import logo from "../../Assets/images/Logo.png";
 import kidBoy from "../../Assets/images/kid-boy.png";
@@ -35,7 +35,7 @@ const FEATURES = [
     soft: "color-mix(in oklab, var(--kid-coral) 22%, white)",
   },
   {
-    Icon: Sparkles,
+    Icon: Balloon,
     title: "ألعاب ترفيهية",
     desc: "حيوانات وألوان وشخصيات كرتون",
     path: "/fun",
@@ -130,7 +130,7 @@ export default function Home() {
              
 
               <h1 
-                className="text-4xl md:text-6xl lg:text-7xl font-black mb-4 leading-tight"
+                className="text-4xl md:text-6xl lg:text-6xl font-black mb-4 leading-tight"
                 style={{ 
                   fontFamily: "Cairo, serif",
                   textShadow: "0 4px 30px rgba(0,0,0,0.3)"
@@ -141,8 +141,8 @@ export default function Home() {
                 <span
                   className="inline-block px-6 py-3 rounded-2xl mt-3 shadow-xl"
                   style={{ 
-                    background: "rgba(255,255,255,0.95)", 
-                    color: "var(--kid-coral)",
+                    background: "rgba(255,255,255,0.7)", 
+                    color: "var(--kid-teal)",
                     textShadow: "none"
                   }}
                 >
@@ -151,7 +151,7 @@ export default function Home() {
               </h1>
 
               <p 
-                className="text-lg md:text-xl lg:text-2xl mb-8 leading-relaxed font-medium"
+                className="text-lg md:text-xl lg:text-2xl mt-8 mb-8 leading-relaxed font-medium"
                 style={{ 
                   textShadow: "0 2px 20px rgba(0,0,0,0.3)"
                 }}
@@ -197,8 +197,7 @@ export default function Home() {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 1.2, duration: 0.8 }}
-                className="absolute bottom-8 left-1/2 transform -translate-x-1/2 flex flex-col items-center gap-2"
-              >
+                className="mt-4 m-auto  flex flex-col items-center gap-2">
                 <span className="text-sm opacity-70" style={{ fontFamily: "Cairo, sans-serif" }}>
                   اكتشف المزيد
                 </span>

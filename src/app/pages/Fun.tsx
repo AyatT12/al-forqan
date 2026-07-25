@@ -1,11 +1,12 @@
 // @ts-nocheck
 import { useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
-import { RotateCcw, Star } from "lucide-react";
+import { RotateCcw, Star, Gamepad2, Sparkles } from "lucide-react";
 import { ANIMALS, BALLOONS, CARTOON_CHARS, COLORS_GAME, CHEERS } from "../../lib/constants";
 import { shuffleArr, randomCheer } from "../../lib/helpers";
 import type { FunGame } from "../../lib/types";
 import Confetti from "../components/Confetti";
+import videoSrc from "../../Assets/video/hero-teacher-kid.mp4";
 
 // ── Encouraging mascot popup (shown on every win) ──────────
 function MascotCheer({ message }: { message: string }) {
@@ -57,6 +58,63 @@ function MascotCheer({ message }: { message: string }) {
   );
 }
 
+// ── Video Header ──────────────────────────────────────────
+interface VideoHeaderProps {
+  videoSrc: string;
+}
+
+function VideoHeader({ videoSrc }: VideoHeaderProps) {
+  return (
+    <div className="relative w-full h-[300px] md:h-[500px] overflow-hidden rounded-2xl mb-8">
+      {/* Video Background */}
+      <video
+        autoPlay
+        loop
+        muted
+        playsInline
+        className="absolute w-full h-full object-cover"
+        style={{ filter: "brightness(0.6) saturate(1.1)" }}
+      >
+        <source src={videoSrc} type="video/mp4" />
+        Your browser does not support the video tag.
+      </video>
+      
+      {/* Overlay with gradient for better text readability */}
+      <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/20 to-black/60" />
+      
+      {/* Content overlay */}
+      <div className="relative z-10 h-full flex flex-col items-center justify-center text-center text-white px-4">
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+        >
+          <h1 className="text-4xl md:text-6xl font-bold mb-3" style={{ fontFamily: "Cairo, serif" }}>
+            ألعاب ترفيهية 
+          </h1>
+          <p className="text-lg md:text-xl opacity-90" style={{ fontFamily: "Cairo, sans-serif" }}>
+            تعلم واستمتع مع شخصياتك المفضلة
+          </p>
+          <div className="flex items-center justify-center gap-2 mt-4">
+            <span className="px-4 py-1.5 bg-white/20 backdrop-blur-sm rounded-full text-sm">
+              🎮 7 ألعاب
+            </span>
+            <span className="px-4 py-1.5 bg-white/20 backdrop-blur-sm rounded-full text-sm">
+              🌟 متعة وتعلم
+            </span>
+            <span className="px-4 py-1.5 bg-white/20 backdrop-blur-sm rounded-full text-sm">
+              🎯 تحديات
+            </span>
+          </div>
+        </motion.div>
+      </div>
+      
+      {/* Decorative element */}
+      <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-white/30 to-transparent" />
+    </div>
+  );
+}
+
 // ── Animal Memory ─────────────────────────────────────────
 function AnimalMemoryGame({ onWin }: { onWin: () => void }) {
   const BG = ["#FEF9C3","#DCFCE7","#DBEAFE","#FCE7F3","#FFF7ED","#F3E8FF","#CCFBF1","#FEE2E2"];
@@ -95,14 +153,14 @@ function AnimalMemoryGame({ onWin }: { onWin: () => void }) {
   return (
     <div className="space-y-4" dir="rtl">
       <div className="flex items-center justify-between">
-        <p className="font-semibold" style={{ fontFamily: "Cairo, sans-serif", color: "#6d32a3" }}>{cards.filter(c => c.matched).length / 2}/{ANIMALS.length} 🐾</p>
+        <p className="font-semibold" style={{ fontFamily: "Cairo, sans-serif", color: "var(--kid-teal)" }}>{cards.filter(c => c.matched).length / 2}/{ANIMALS.length} 🐾</p>
         <button onClick={() => { setCards(make()); setSel([]); setLocked(false); }} className="p-2 rounded-lg hover:bg-muted"><RotateCcw size={18} /></button>
       </div>
       <div className="grid grid-cols-4 gap-2">
         {cards.map((card, idx) => (
           <motion.button key={card.id} whileHover={{ scale: card.matched ? 1 : 1.06 }} whileTap={{ scale: 0.92 }} onClick={() => flip(card.id)}
             className={`aspect-square rounded-2xl flex flex-col items-center justify-center gap-1 transition-all shadow-sm ${card.matched ? "opacity-60 cursor-default" : "cursor-pointer"}`}
-            style={{ background: card.flipped || card.matched ? BG[idx % BG.length] : "linear-gradient(135deg,#c289f7,#6d32a3)", border: card.matched ? "3px solid #22C55E" : card.flipped ? "3px solid #D4A843" : "3px solid transparent" }}>
+            style={{ background: card.flipped || card.matched ? BG[idx % BG.length] : "linear-gradient(135deg,#c289f7,var(--kid-teal))", border: card.matched ? "3px solid #22C55E" : card.flipped ? "3px solid #D4A843" : "3px solid transparent" }}>
             {card.flipped || card.matched
               ? <><span className="text-3xl">{card.emoji}</span><span className="text-xs font-medium" style={{ fontFamily: "Cairo, sans-serif", color: "#2C1810" }}>{card.name}</span></>
               : <span className="text-2xl" style={{color:"white"}}>{idx + 1}</span>
@@ -235,6 +293,122 @@ function CartoonGame({ onWin }: { onWin: () => void }) {
             {res ? "🎉 صحيح!" : `هي ${q.correct.name} ${q.correct.emoji}`}
           </div>
           {qIdx < qs.length - 1 && <button onClick={() => { setQIdx(p => p + 1); setSel(null); setRes(null); }} className="px-4 rounded-xl border border-border hover:bg-muted text-xl" style={{ fontFamily: "Cairo, sans-serif" }}>التالي</button>}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ── Emotions Game (لعبة المشاعر) ────────────────────────────
+const EMOTIONS = [
+  { emoji: "😊", name: "سعيد",   wrong: ["حزين", "غاضب", "خائف"] },
+  { emoji: "😢", name: "حزين",   wrong: ["سعيد", "متفاجئ", "غاضب"] },
+  { emoji: "😠", name: "غاضب",   wrong: ["سعيد", "حزين", "خجول"] },
+  { emoji: "😲", name: "متفاجئ", wrong: ["غاضب", "نعسان", "حزين"] },
+  { emoji: "😱", name: "خائف",   wrong: ["سعيد", "فخور", "غاضب"] },
+  { emoji: "😴", name: "نعسان",  wrong: ["متفاجئ", "خائف", "خجول"] },
+  { emoji: "😳", name: "خجول",   wrong: ["فخور", "غاضب", "سعيد"] },
+  { emoji: "😌", name: "فخور",   wrong: ["خجول", "حزين", "نعسان"] },
+];
+
+const EMOTION_COLORS = ["#2E3EC9", "#B24FD1", "#E0491F", "#1FA97A"];
+
+function EmotionsGame({ onWin }: { onWin: () => void }) {
+  const TOTAL = 5;
+  const [qs] = useState(() =>
+    shuffleArr(EMOTIONS.map((_, i) => i)).slice(0, TOTAL).map(i => {
+      const e = EMOTIONS[i];
+      return { correct: e, opts: shuffleArr([e.name, ...e.wrong]) };
+    })
+  );
+  const [qIdx, setQIdx] = useState(0);
+  const [correctCount, setCorrectCount] = useState(0);
+  const [sel, setSel] = useState<string | null>(null);
+  const [res, setRes] = useState<boolean | null>(null);
+
+  const q = qs[qIdx];
+
+  const choose = (name: string) => {
+    if (sel) return;
+    setSel(name);
+    const ok = name === q.correct.name;
+    setRes(ok);
+    if (ok) setCorrectCount(c => c + 1);
+    setTimeout(() => {
+      if (qIdx + 1 < qs.length) {
+        setQIdx(p => p + 1);
+        setSel(null);
+        setRes(null);
+      } else {
+        onWin();
+      }
+    }, 1100);
+  };
+
+  return (
+    <div className="space-y-5" dir="rtl">
+      {/* top bar: progress + score */}
+      <div className="flex items-center justify-between">
+        <span className="text-sm font-bold px-3 py-1 rounded-full bg-muted" style={{ fontFamily: "Cairo, sans-serif", color: "#3F4A47" }}>
+          {qIdx + 1} من {qs.length}
+        </span>
+        <span className="flex items-center gap-1 text-sm font-bold px-3 py-1 rounded-full" style={{ fontFamily: "Cairo, sans-serif", background: "#DCFCE7", color: "#166534" }}>
+          {correctCount} ✓
+        </span>
+      </div>
+
+      <div className="flex flex-col items-center gap-4">
+        {/* character face */}
+        <motion.div
+          key={qIdx}
+          initial={{ scale: 0.5, rotate: -8 }}
+          animate={{ scale: 1, rotate: 0 }}
+          transition={{ type: "spring", stiffness: 260, damping: 16 }}
+          className="text-9xl"
+        >
+          {q.correct.emoji}
+        </motion.div>
+        <p className="text-lg font-medium" style={{ fontFamily: "Cairo, sans-serif", color: "#2C1810" }}>
+          كيف يشعر؟
+        </p>
+      </div>
+
+      <div className="grid grid-cols-2 gap-3">
+        {q.opts.map((opt, i) => {
+          let bg = EMOTION_COLORS[i % EMOTION_COLORS.length];
+          let opacity = 1;
+          if (sel) {
+            if (opt === q.correct.name) opacity = 1;
+            else if (opt === sel) opacity = 0.55;
+            else opacity = 0.35;
+          }
+          return (
+            <motion.button
+              key={i}
+              whileHover={{ scale: sel ? 1 : 1.04 }}
+              whileTap={{ scale: 0.94 }}
+              onClick={() => choose(opt)}
+              disabled={!!sel}
+              className="py-8 px-4 rounded-2xl font-bold text-2xl text-white shadow-md transition-all border-4"
+              style={{
+                background: bg,
+                opacity,
+                borderColor: sel && opt === q.correct.name ? "#22C55E" : sel && opt === sel && opt !== q.correct.name ? "#EF4444" : "transparent",
+                fontFamily: "Cairo, sans-serif",
+              }}
+            >
+              {opt}
+            </motion.button>
+          );
+        })}
+      </div>
+
+      {res !== null && (
+        <div
+          className={`rounded-xl p-3 text-center font-bold text-lg ${res ? "bg-green-100 border border-green-300 text-green-700" : "bg-red-100 border border-red-300 text-red-700"}`}
+          style={{ fontFamily: "Cairo, sans-serif" }}
+        >
+          {res ? "😃 صحيح!" : `الإجابة الصحيحة: ${q.correct.name}`}
         </div>
       )}
     </div>
@@ -397,7 +571,7 @@ function ScratchGame({ onWin }: { onWin: () => void }) {
             whileHover={{ scale: revealed.has(i) ? 1 : 1.1 }} whileTap={{ scale: 0.85 }}
             initial={{ scale: 0.8 }} animate={{ scale: 1 }}
             className={`px-4 py-3 rounded-2xl text-lg font-medium border-2 transition-all min-w-16 shadow-sm ${revealed.has(i) ? "cursor-default border-green-400" : "cursor-pointer border-amber-400"}`}
-            style={{ background: revealed.has(i) ? "#DCFCE7" : "#6d32a3", color: revealed.has(i) ? "#166534" : "#fff", fontFamily: "Noto Naskh Arabic, serif" }}>
+            style={{ background: revealed.has(i) ? "#DCFCE7" : "var(--kid-teal)", color: revealed.has(i) ? "#166534" : "#fff", fontFamily: "Noto Naskh Arabic, serif" }}>
             {revealed.has(i) ? w : <span className="text-2xl">⭐</span>}
           </motion.button>
         ))}
@@ -419,8 +593,9 @@ const FUN_LIST = [
   { id:"balloons"      as FunGame, title:"لعبة البالونات",  desc:"اضغط البالون الصحيح",     emoji:"🎈🎈🎈", bg:"linear-gradient(135deg,#F3DCEA,#E7D7F5)", fg:"#7A4E7D" },
   { id:"colors"        as FunGame, title:"لعبة الألوان",   desc:"تعرف على الألوان",          emoji:"🌈🎨🖌️", bg:"linear-gradient(135deg,#D9EBFA,#CFEFEF)", fg:"#3A6B82" },
   { id:"cartoon"       as FunGame, title:"مسابقة الكرتون", desc:"تعرف على الشخصيات",        emoji:"👸🤖🧙", bg:"linear-gradient(135deg,#D9F2E3,#CFEAD9)", fg:"#3F7A5C" },
-  { id:"xo"            as FunGame, title:"لعبة XO",        desc:"العب مع صديقك",             emoji:"❌⭕✨", bg:"linear-gradient(135deg,#E3DFF7,#EAE1F9)", fg:"#6A5F96" },
-  { id:"scratch"       as FunGame, title:"اكتشف الآية",   desc:"اكشف الكلمات المخفية",     emoji:"⭐🌟✨", bg:"linear-gradient(135deg,#FBEAD0,#F8DEB8)", fg:"#96712F" },
+  { id:"emotions"      as FunGame, title:"لعبة المشاعر",   desc:"خمن الشعور الصحيح",        emoji:"😊😢😠", bg:"linear-gradient(135deg,#FDE1E1,#FBEAD0)", fg:"#A94A56" },
+  { id:"xo"            as FunGame, title:"لعبة XO",        desc:"العب مع صديقك",             emoji:"❌⭕", bg:"linear-gradient(135deg,#E3DFF7,#EAE1F9)", fg:"#6A5F96" },
+  { id:"scratch"       as FunGame, title:"اكتشف الآية",   desc:"اكشف الكلمات المخفية",     emoji:"⭐🌟", bg:"linear-gradient(135deg,#FBEAD0,#F8DEB8)", fg:"#96712F" },
 ];
 
 export default function Fun() {
@@ -435,40 +610,71 @@ export default function Fun() {
     setTimeout(() => setCheer(""), 2800);
   };
 
+  const currentGame = FUN_LIST.find(g => g.id === game);
+
   return (
-    <div className="p-5 lg:p-8" dir="rtl">
+    <div className="p-5 lg:p-8 min-h-full" dir="rtl" style={{ background: "#F8F5F0" }}>
       {cheer && <Confetti message={cheer} />}
       <MascotCheer message={cheer} />
 
-      <div className="flex items-center justify-between mb-6 max-w-2xl mx-auto">
-        <h2 className="text-2xl font-bold" style={{ fontFamily: "Cairo, serif", color: "#6d32a3" }}>ألعاب ترفيهية 🎪</h2>
-        <div className="flex items-center gap-2 px-4 py-2 rounded-full shadow-sm" style={{ background: "linear-gradient(135deg,#FBE3C7,#FAD9B0)", color: "#8A5A2B" }}>
-          <Star size={16} /><span className="font-bold" style={{ fontFamily: "Cairo, sans-serif" }}>{score}</span>
+      {/* Video Header */}
+      <VideoHeader videoSrc={videoSrc} />
+
+      <div className="flex items-center justify-between mb-6 max-w-3xl mx-auto">
+        <div>
+          {game && <p className="text-sm mt-0.5" style={{ fontFamily: "Cairo, sans-serif", color: "#7A5C48" }}>{currentGame?.title}</p>}
+        </div>
+        <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 px-4 py-2 rounded-full shadow-sm" style={{ background: "linear-gradient(135deg,#FBE3C7,#FAD9B0)", color: "#8A5A2B" }}>
+            <Star size={16} /><span className="font-bold" style={{ fontFamily: "Cairo, sans-serif" }}>{score}</span>
+          </div>
         </div>
       </div>
 
       {!game ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 max-w-2xl mx-auto">
-          {FUN_LIST.map(g => (
-            <motion.button key={g.id} whileHover={{ scale: 1.04, y: -5 }} whileTap={{ scale: 0.96 }} onClick={() => setGame(g.id)}
-              className="relative overflow-hidden rounded-3xl p-6 flex flex-col gap-2 border-4 border-white cursor-pointer shadow-md" style={{ background: g.bg, color: g.fg }}>
-              <div className="text-3xl">{g.emoji}</div>
-              <h3 className="text-lg font-bold" style={{ fontFamily: "Cairo, serif" }}>{g.title}</h3>
-              <p className="text-xs opacity-80" style={{ fontFamily: "Cairo, sans-serif" }}>{g.desc}</p>
-            </motion.button>
-          ))}
+        <div className="max-w-3xl mx-auto">
+          <p className="text-sm text-center mb-5" style={{ fontFamily: "Cairo, sans-serif", color: "#7A5C48" }}>
+            اختر لعبة واستمتع مع شخصياتك المفضلة
+          </p>
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+            {FUN_LIST.map(g => (
+              <motion.button 
+                key={g.id} 
+                whileHover={{ scale: 1.04, y: -5 }} 
+                whileTap={{ scale: 0.96 }} 
+                onClick={() => setGame(g.id)}
+                className="relative overflow-hidden rounded-3xl p-6 flex flex-col gap-2 border-4 border-white cursor-pointer shadow-md text-right"
+                style={{ background: g.bg, color: g.fg }}
+              >
+                <span className="text-3xl">{g.emoji}</span>
+                <div className="relative z-10">
+                  <div className="font-bold text-base mb-0.5" style={{ fontFamily: "Cairo, serif" }}>{g.title}</div>
+                  <p className="text-xs opacity-80 leading-snug mb-2" style={{ fontFamily: "Cairo, sans-serif" }}>{g.desc}</p>
+                </div>
+              </motion.button>
+            ))}
+          </div>
         </div>
       ) : (
-        <div className="max-w-2xl mx-auto">
-          <div className="flex items-center gap-3 mb-5">
-            <button onClick={() => setGame(null)} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg hover:bg-muted text-sm" style={{ fontFamily: "Cairo, sans-serif", color: "#7A5C48" }}>← العودة</button>
-            <h3 className="font-bold text-lg" style={{ fontFamily: "Cairo, serif", color: "#6d32a3" }}>{FUN_LIST.find(g => g.id === game)?.title}</h3>
+        <div className="max-w-3xl mx-auto">
+          <button onClick={() => setGame(null)}
+            className="flex items-center gap-1.5 px-3 py-2 rounded-xl hover:bg-white border border-transparent hover:border-border text-sm mb-5 transition-all"
+            style={{ fontFamily: "Cairo, sans-serif", color: "#7A5C48" }}>
+            ← العودة لقائمة الألعاب
+          </button>
+          <div className="flex items-center gap-3 mb-4">
+            <div className="w-10 h-10 rounded-xl flex items-center justify-center text-xl flex-shrink-0" style={{ background: currentGame?.bg?.split(',')[0] || 'var(--kid-teal)' }}>{currentGame?.emoji.split(' ')[0]}</div>
+            <div>
+              <h3 className="font-bold" style={{ fontFamily: "Cairo, serif", color: "var(--kid-teal)" }}>{currentGame?.title}</h3>
+              <p className="text-xs" style={{ fontFamily: "Cairo, sans-serif", color: "#7A5C48" }}>{currentGame?.desc}</p>
+            </div>
           </div>
-          <div className="bg-card border border-border rounded-3xl p-6 shadow-sm">
+          <div className="bg-white border border-border rounded-2xl p-5 shadow-sm">
             {game === "animal-memory" && <AnimalMemoryGame onWin={win} />}
             {game === "balloons"      && <BalloonGame onWin={win} />}
             {game === "colors"        && <ColorGame onWin={win} />}
             {game === "cartoon"       && <CartoonGame onWin={win} />}
+            {game === "emotions"      && <EmotionsGame onWin={win} />}
             {game === "xo"            && <XOGame onWin={win} />}
             {game === "scratch"       && <ScratchGame onWin={win} />}
           </div>

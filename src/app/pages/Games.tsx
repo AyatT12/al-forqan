@@ -2,7 +2,7 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Star, RotateCcw, Shuffle, Volume2, BookOpen, ChevronDown, Check, X, Plus, Trash2 } from "lucide-react";
-import videoSrc from "../../Assets/video/hero-teacher-kid.mp4";
+import videoSrc from "../../Assets/video/Hero3.mp4";
 
 // ─── TYPES ───────────────────────────────────────────
 interface Surah {
@@ -190,7 +190,7 @@ const SECTOR_COLORS: string[] = [
   "#FB923C","#4ADE80","#38BDF8","#C084FC","#F43F5E","#FACC15",
 ];
 
-const CHEERS: string[] = ["أحسنت يا بطل! 🏆","رائع جداً! ⭐⭐⭐","ممتاز! 🌟✨","برافو عليك! 🎊🎉","ما شاء الله! 👏👏","أنت نجم! 🌟💫"];
+const CHEERS: string[] = ["أحسنت يا بطل! 🏆","رائع جداً! ⭐⭐⭐","ممتاز! 🌟","برافو عليك! 🎊🎉","ما شاء الله! 👏👏","أنت نجم! 🌟💫"];
 
 function shuffleArr<T>(arr: T[]): T[] { 
   const a = [...arr]; 
@@ -355,14 +355,14 @@ interface ConfettiProps {
 }
 
 function Confetti({ message }: ConfettiProps) {
-  const emojis: string[] = ["🎉","⭐","🌟","✨","🎊","🏆","💛","🎈","🌈","👏"];
+  const emojis: string[] = ["🎉","⭐","🌟","🎊","🏆","💛","🎈","🌈","👏"];
   return (
     <div className="fixed inset-0 pointer-events-none z-50 overflow-hidden">
       {Array.from({length:20},(_,i)=>({emoji:emojis[i%emojis.length],x:Math.random()*100,delay:Math.random()*0.6,dur:Math.random()*1.2+1})).map((item, i) => (
         <motion.div key={i} className="absolute text-3xl" style={{left:`${item.x}%`,top:-60}} animate={{y:"110vh",rotate:360}} transition={{duration:item.dur,delay:item.delay,ease:"easeIn"}}>{item.emoji}</motion.div>
       ))}
       <motion.div className="absolute inset-0 flex items-center justify-center" initial={{scale:0,opacity:0}} animate={{scale:1,opacity:1}} transition={{type:"spring",stiffness:300,damping:20}}>
-        <div className="text-2xl font-bold px-8 py-5 rounded-3xl text-white shadow-2xl text-center" style={{background:"linear-gradient(135deg,#6d32a3,#2d7a63)",fontFamily:"Cairo, serif",maxWidth:"80vw"}}>{message}</div>
+        <div className="text-2xl font-bold px-8 py-5 rounded-3xl text-white shadow-2xl text-center" style={{background:"linear-gradient(135deg,var(--kid-teal),#2d7a63)",fontFamily:"Cairo, serif",maxWidth:"80vw"}}>{message}</div>
       </motion.div>
     </div>
   );
@@ -383,8 +383,8 @@ function SurahSelector({ selectedId, onSelect, label = "اختر السورة" }
       <button onClick={() => setOpen(v => !v)}
         className="flex items-center gap-2 px-4 py-2.5 rounded-xl border-2 bg-white w-full text-right transition-all hover:border-amber-400"
         style={{ borderColor: open ? "#D4A843" : "#E0D5C5", fontFamily: "Cairo, serif" }}>
-        <BookOpen size={16} style={{ color: "#6d32a3", flexShrink: 0 }} />
-        <span className="flex-1 text-base" style={{ color: "#6d32a3" }}>{surah ? `سورة ${surah.name}` : label}</span>
+        <BookOpen size={16} style={{ color: "var(--kid-teal)", flexShrink: 0 }} />
+        <span className="flex-1 text-base" style={{ color: "var(--kid-teal)" }}>{surah ? `سورة ${surah.name}` : label}</span>
         <ChevronDown size={16} className={`transition-transform flex-shrink-0 ${open ? "rotate-180" : ""}`} style={{ color: "#7A5C48" }} />
       </button>
       <AnimatePresence>
@@ -395,12 +395,12 @@ function SurahSelector({ selectedId, onSelect, label = "اختر السورة" }
               <button key={s.id} onClick={() => { onSelect(s.id); setOpen(false); }}
                 className={`w-full flex items-center gap-3 px-4 py-2.5 text-right transition-colors hover:bg-amber-50 ${selectedId === s.id ? "bg-emerald-50" : ""}`}>
                 <span className="w-7 h-7 rounded-full text-xs font-bold flex items-center justify-center flex-shrink-0"
-                  style={{ background: selectedId === s.id ? "#6d32a3" : "#E8DDD0", color: selectedId === s.id ? "white" : "#7A5C48", fontFamily: "Cairo, sans-serif" }}>
+                  style={{ background: selectedId === s.id ? "var(--kid-teal)" : "#E8DDD0", color: selectedId === s.id ? "white" : "#7A5C48", fontFamily: "Cairo, sans-serif" }}>
                   {s.id}
                 </span>
-                <span style={{ fontFamily: "Cairo, serif", color: "#6d32a3" }}>{s.name}</span>
+                <span style={{ fontFamily: "Cairo, serif", color: "var(--kid-teal)" }}>{s.name}</span>
                 <span className="mr-auto text-xs" style={{ fontFamily: "Cairo, sans-serif", color: "#7A5C48" }}>{s.ayahs} آية</span>
-                {selectedId === s.id && <Check size={14} style={{ color: "#6d32a3" }} />}
+                {selectedId === s.id && <Check size={14} style={{ color: "var(--kid-teal)" }} />}
               </button>
             ))}
           </motion.div>
@@ -428,7 +428,7 @@ function EmptyState({ message = "اختر سورة لتبدأ اللعبة" }: E
   return (
     <div className="flex flex-col items-center justify-center py-16 gap-3 text-center">
       <div className="text-5xl">📖</div>
-      <p className="text-lg font-semibold" style={{ fontFamily: "Cairo, serif", color: "#6d32a3" }}>{message}</p>
+      <p className="text-lg font-semibold" style={{ fontFamily: "Cairo, serif", color: "var(--kid-teal)" }}>{message}</p>
       <p className="text-sm" style={{ fontFamily: "Cairo, sans-serif", color: "#7A5C48" }}>ستُولَّد الأسئلة تلقائياً من الآيات</p>
     </div>
   );
@@ -787,19 +787,19 @@ function WordOrderGame({ onWin }: WordOrderGameProps) {
       {ayahs.length > 0 && currentAyah && (
         <div className="space-y-4">
           <div className="flex items-center justify-between bg-white border border-border rounded-xl px-4 py-2.5">
-            <button onClick={prevAyah} disabled={ayahIdx === 0} className="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-muted disabled:opacity-30" style={{ color: "#6d32a3" }}>‹</button>
-            <span className="text-sm font-medium" style={{ fontFamily: "Cairo, sans-serif", color: "#6d32a3" }}>الآية {currentAyah.numberInSurah} من {ayahs.length}</span>
-            <button onClick={nextAyah} disabled={ayahIdx === ayahs.length - 1} className="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-muted disabled:opacity-30" style={{ color: "#6d32a3" }}>›</button>
+            <button onClick={prevAyah} disabled={ayahIdx === 0} className="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-muted disabled:opacity-30" style={{ color: "var(--kid-teal)" }}>‹</button>
+            <span className="text-sm font-medium" style={{ fontFamily: "Cairo, sans-serif", color: "var(--kid-teal)" }}>الآية {currentAyah.numberInSurah} من {ayahs.length}</span>
+            <button onClick={nextAyah} disabled={ayahIdx === ayahs.length - 1} className="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-muted disabled:opacity-30" style={{ color: "var(--kid-teal)" }}>›</button>
           </div>
           <div className={`min-h-20 border-2 border-dashed rounded-2xl p-4 flex flex-wrap gap-2 transition-colors ${res === true ? "border-green-400 bg-green-50" : res === false ? "border-red-400 bg-red-50" : "border-amber-300 bg-amber-50/50"}`}>
-            {arr.map((w, i) => <motion.button key={`arr-${w}-${i}`} initial={{ scale: 0.85 }} animate={{ scale: 1 }} onClick={() => rem(w, i)} className="px-3 py-2 rounded-xl text-sm text-white shadow-sm" style={{ background: "#6d32a3", fontFamily: "Noto Naskh Arabic, serif" }}>{w}</motion.button>)}
+            {arr.map((w, i) => <motion.button key={`arr-${w}-${i}`} initial={{ scale: 0.85 }} animate={{ scale: 1 }} onClick={() => rem(w, i)} className="px-3 py-2 rounded-xl text-sm text-white shadow-sm" style={{ background: "var(--kid-teal)", fontFamily: "Noto Naskh Arabic, serif" }}>{w}</motion.button>)}
             {arr.length === 0 && <span className="m-auto text-muted-foreground text-sm" style={{ fontFamily: "Cairo, sans-serif" }}>انقر على الكلمات أدناه لترتيبها</span>}
           </div>
           <div className="flex flex-wrap gap-2">
             {avail.map((w, i) => <motion.button key={`avail-${w}-${i}`} whileHover={{ scale: 1.06 }} whileTap={{ scale: 0.94 }} onClick={() => add(w, i)} className="px-3 py-2 rounded-xl text-sm border-2" style={{ fontFamily: "Noto Naskh Arabic, serif", background: "#F5F0E6", borderColor: "#D4A843", color: "#2C1810" }}>{w}</motion.button>)}
           </div>
           <div className="flex gap-3">
-            <button onClick={check} disabled={arr.length !== words.length} className="flex-1 py-3 rounded-xl font-semibold text-white disabled:opacity-40" style={{ background: "#6d32a3", fontFamily: "Cairo, sans-serif" }}>✓ تحقق من الإجابة</button>
+            <button onClick={check} disabled={arr.length !== words.length} className="flex-1 py-3 rounded-xl font-semibold text-white disabled:opacity-40" style={{ background: "var(--kid-teal)", fontFamily: "Cairo, sans-serif" }}>✓ تحقق من الإجابة</button>
             <button onClick={reset} className="px-4 py-3 rounded-xl border border-border hover:bg-muted"><RotateCcw size={18} /></button>
           </div>
           <AnimatePresence>
@@ -956,7 +956,7 @@ function MatchingGame({ onWin }: MatchingGameProps) {
             <button onClick={() => generatePairs(ayahs)} className="flex items-center gap-1.5 text-sm px-3 py-1.5 rounded-lg hover:bg-muted" style={{ fontFamily: "Cairo, sans-serif", color: "#7A5C48" }}><Shuffle size={14} /> تبديل</button>
           </div>
           <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
-            <motion.div className="h-full rounded-full" style={{ background: "#6d32a3" }} animate={{ width: `${(matched.size / pairs.length) * 100}%` }} transition={{ type: "spring" }} />
+            <motion.div className="h-full rounded-full" style={{ background: "var(--kid-teal)" }} animate={{ width: `${(matched.size / pairs.length) * 100}%` }} transition={{ type: "spring" }} />
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-2">
@@ -1037,7 +1037,7 @@ function MemoryGame({ onWin }: MemoryGameProps) {
       {cards.length > 0 && (
         <div className="space-y-4">
           <div className="flex items-center justify-between">
-            <p className="text-sm font-medium" style={{ fontFamily: "Cairo, sans-serif", color: "#6d32a3" }}>{matchedCount}/{totalPairs} أزواج ✓</p>
+            <p className="text-sm font-medium" style={{ fontFamily: "Cairo, sans-serif", color: "var(--kid-teal)" }}>{matchedCount}/{totalPairs} أزواج ✓</p>
             <button onClick={() => generateCards(ayahs)} className="flex items-center gap-1.5 text-sm px-3 py-1.5 rounded-lg hover:bg-muted" style={{ fontFamily: "Cairo, sans-serif", color: "#7A5C48" }}><RotateCcw size={14} /> لعبة جديدة</button>
           </div>
           <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
@@ -1048,7 +1048,7 @@ function MemoryGame({ onWin }: MemoryGameProps) {
               <motion.button key={card.id} whileHover={{ scale: card.matched || card.flipped ? 1 : 1.05 }} whileTap={{ scale: 0.92 }} onClick={() => flip(card.id)}
                 className={`aspect-square rounded-2xl border-2 flex items-center justify-center p-2 transition-all text-center ${card.matched ? "border-green-400 bg-green-50 cursor-default" : card.flipped ? "border-amber-400 bg-amber-50" : "border-border bg-white hover:border-emerald-300 cursor-pointer"}`}>
                 {card.flipped || card.matched ? <span className="leading-tight" style={{ fontFamily: "Noto Naskh Arabic, serif", fontSize: "0.6rem", color: card.matched ? "#166534" : "#2C1810" }}>{card.text}</span>
-                  : <div className="w-9 h-9 rounded-full flex items-center justify-center" style={{ background: "linear-gradient(135deg,#6d32a3,#2d7a63)" }}><Star size={15} className="text-amber-400" /></div>}
+                  : <div className="w-9 h-9 rounded-full flex items-center justify-center" style={{ background: "linear-gradient(135deg,var(--kid-teal),#2d7a63)" }}><Star size={15} className="text-amber-400" /></div>}
               </motion.button>
             ))}
           </div>
@@ -1113,13 +1113,13 @@ function ListeningGame({ onWin }: ListeningGameProps) {
         <div className="space-y-4" dir="rtl">
           <audio ref={audioRef} onEnded={() => setPlaying(false)} />
           <div className="flex items-center justify-between">
-            <span className="text-sm font-medium" style={{ fontFamily: "Cairo, sans-serif", color: "#6d32a3" }}>⭐ {score} إجابة صحيحة</span>
+            <span className="text-sm font-medium" style={{ fontFamily: "Cairo, sans-serif", color: "var(--kid-teal)" }}>⭐ {score} إجابة صحيحة</span>
             <button onClick={() => generateQuestion(ayahs)} className="flex items-center gap-1.5 text-sm px-3 py-1.5 rounded-lg hover:bg-muted" style={{ fontFamily: "Cairo, sans-serif", color: "#7A5C48" }}><Shuffle size={14} /> سؤال آخر</button>
           </div>
           <div className="flex flex-col items-center gap-3 py-4">
             <motion.button whileHover={{ scale: 1.06 }} whileTap={{ scale: 0.94 }} onClick={play}
               className="w-32 h-32 rounded-full flex flex-col items-center justify-center text-white shadow-2xl gap-2 relative overflow-hidden"
-              style={{ background: "linear-gradient(135deg,#6d32a3,#2d7a63)" }}>
+              style={{ background: "linear-gradient(135deg,var(--kid-teal),#2d7a63)" }}>
               <IslamicPattern opacity={0.1} />
               <motion.div animate={playing ? { scale: [1, 1.2, 1] } : {}} transition={{ repeat: Infinity, duration: 1 }}><Volume2 size={36} className="relative z-10" /></motion.div>
               <span className="text-sm relative z-10" style={{ fontFamily: "Cairo, sans-serif" }}>{playing ? "يُشغَّل..." : "استمع"}</span>
@@ -1172,7 +1172,7 @@ interface VideoHeaderProps {
 
 function VideoHeader({ videoSrc }: VideoHeaderProps) {
   return (
-    <div className="relative w-full h-[400px] md:h-[550px] lg:h-[650px] overflow-hidden rounded-2xl mb-8">
+    <div className="relative w-full h-[300px] md:h-[500px] overflow-hidden rounded-2xl mb-8">
       {/* Video Background */}
       <video
         autoPlay
@@ -1289,9 +1289,9 @@ export default function Games() {
             ← العودة لقائمة الألعاب
           </button>
           <div className="flex items-center gap-3 mb-4">
-            <div className="w-10 h-10 rounded-xl flex items-center justify-center text-xl flex-shrink-0" style={{ background: currentGame?.bg?.split(',')[0] || '#6d32a3' }}>{currentGame?.icon}</div>
+            <div className="w-10 h-10 rounded-xl flex items-center justify-center text-xl flex-shrink-0" style={{ background: currentGame?.bg?.split(',')[0] || 'var(--kid-teal)' }}>{currentGame?.icon}</div>
             <div>
-              <h3 className="font-bold" style={{ fontFamily: "Cairo, serif", color: "#6d32a3" }}>{currentGame?.title}</h3>
+              <h3 className="font-bold" style={{ fontFamily: "Cairo, serif", color: "var(--kid-teal)" }}>{currentGame?.title}</h3>
               <p className="text-xs" style={{ fontFamily: "Cairo, sans-serif", color: "#7A5C48" }}>{currentGame?.desc}</p>
             </div>
           </div>
