@@ -350,7 +350,7 @@ export default function Whiteboard() {
   const [fullscreenImage, setFullscreenImage] = useState(null);
 
   /* drawing state */
-  const [tool, setTool] = useState("pen");
+  const [tool, setTool] = useState("pointer");
   const [color, setColor] = useState("#000000");
   const [strokeWidth, setStrokeWidth] = useState(4);
   const [opacity, setOpacity] = useState(100);
