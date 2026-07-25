@@ -1,7 +1,7 @@
 // @ts-nocheck
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Download, RotateCcw, Palette, Image as ImageIcon, Eye, Upload, X, Sparkles, Crown, Star, Heart, Award } from "lucide-react";
+import { Download, RotateCcw, Palette, Image as ImageIcon, Eye, Upload, X, Sparkles, Crown, Star, Heart, Award, Maximize2 } from "lucide-react";
 import { SURAHS } from "../../lib/constants";
 import { roundRectPath } from "../../lib/helpers";
 
@@ -43,13 +43,13 @@ const TEMPLATES: Template[] = [
     hasImage: true,
     icon: <Crown size={16} />,
     colors: {
-      primary: "var(--kid-teal)",
+      primary: "#5296aa",
       secondary: "#C17A5C",
       accent: "#D4A843",
-      text: "#2C1810",
+      text: "#50210f",
       background: ["#FDF8F0", "#F5EDE0"],
       border: "#D4A843",
-      highlight: "var(--kid-teal)",
+      highlight: "#5296aa",
     },
     fonts: {
       title: "Cairo, serif",
@@ -91,7 +91,7 @@ const TEMPLATES: Template[] = [
     },
     style: 'modern',
   },
- 
+
   // 5. بسيط نظيف (بدون صورة)
   {
     id: "simple-clean",
@@ -209,13 +209,13 @@ const TEMPLATES: Template[] = [
 // ─── COMPONENTS ──────────────────────────────────────
 
 // نافذة رفع الصورة
-function ImageUploadModal({ 
-  isOpen, 
-  onClose, 
-  onImageUpload 
-}: { 
-  isOpen: boolean; 
-  onClose: () => void; 
+function ImageUploadModal({
+  isOpen,
+  onClose,
+  onImageUpload
+}: {
+  isOpen: boolean;
+  onClose: () => void;
   onImageUpload: (imageData: string) => void;
 }) {
   const [preview, setPreview] = useState<string | null>(null);
@@ -276,7 +276,7 @@ function ImageUploadModal({
         dir="rtl"
       >
         <div className="flex items-center justify-between mb-4">
-          <h3 className="text-lg font-bold" style={{ fontFamily: "Cairo, sans-serif", color: "var(--kid-teal)" }}>
+          <h3 className="text-lg font-bold" style={{ fontFamily: "Cairo, sans-serif", color: "#5296aa" }}>
             <Upload className="inline-block ml-2" size={20} />
             رفع صورة للشهادة
           </h3>
@@ -287,9 +287,8 @@ function ImageUploadModal({
 
         <div className="space-y-4">
           <div
-            className={`border-2 border-dashed rounded-xl p-8 text-center cursor-pointer transition-colors ${
-              preview ? 'border-emerald-400 bg-emerald-50' : 'border-gray-300 hover:border-emerald-400'
-            }`}
+            className={`border-2 border-dashed rounded-xl p-8 text-center cursor-pointer transition-colors ${preview ? 'border-emerald-400 bg-emerald-50' : 'border-gray-300 hover:border-emerald-400'
+              }`}
             onClick={() => fileInputRef.current?.click()}
           >
             <input
@@ -359,32 +358,114 @@ function ImageUploadModal({
   );
 }
 
+// نافذة معاينة الشهادة (مودال)
+function CertPreviewModal({
+  isOpen,
+  onClose,
+  studentName,
+  surahName,
+  teacherName,
+  level,
+  date,
+  template,
+  customImage,
+}: {
+  isOpen: boolean;
+  onClose: () => void;
+  studentName: string;
+  surahName: string;
+  teacherName: string;
+  level: string;
+  date: string;
+  template: Template;
+  customImage?: string | null;
+}) {
+  // منع التمرير في الخلفية عند فتح المودال
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [isOpen]);
+
+  if (!isOpen) return null;
+
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+      onClick={onClose}
+    >
+      <motion.div
+        initial={{ scale: 0.85, y: 30 }}
+        animate={{ scale: 1, y: 0 }}
+        exit={{ scale: 0.85, y: 30 }}
+        className="relative max-w-lg w-full"
+        onClick={e => e.stopPropagation()}
+      >
+        {/* زر إغلاق */}
+        <button
+          onClick={onClose}
+          className="absolute -top-12 left-0 p-2 text-white hover:bg-white/10 rounded-full transition-colors z-10"
+        >
+          <X size={28} />
+        </button>
+
+        {/* عنوان المودال */}
+        <div className="text-white text-center mb-3" style={{ fontFamily: "Cairo, sans-serif" }}>
+          <span className="text-sm opacity-80">معاينة الشهادة</span>
+        </div>
+
+        {/* محتوى الشهادة */}
+        <div className="rounded-2xl overflow-hidden shadow-2xl border border-white/10">
+          <CertPreview
+            studentName={studentName}
+            surahName={surahName}
+            teacherName={teacherName}
+            level={level}
+            date={date}
+            template={template}
+            customImage={customImage}
+          />
+        </div>
+
+      </motion.div>
+    </motion.div>
+  );
+}
+
 // معاينة الشهادة
-function CertPreview({ 
-  studentName, 
-  surahName, 
-  teacherName, 
-  level, 
+function CertPreview({
+  studentName,
+  surahName,
+  teacherName,
+  level,
   date,
   template,
   customImage
 }: {
-  studentName: string; 
-  surahName: string; 
-  teacherName: string; 
-  level: string; 
+  studentName: string;
+  surahName: string;
+  teacherName: string;
+  level: string;
   date: string;
   template: Template;
   customImage?: string | null;
 }) {
   const { colors, fonts, decorations, style } = template;
-  
+
   // رسم النقوش
   const renderPattern = () => {
     if (decorations.pattern === 'dots') {
       return (
         <div className="absolute inset-0 pointer-events-none opacity-5">
-          <div className="absolute inset-0" style={{ 
+          <div className="absolute inset-0" style={{
             backgroundImage: 'radial-gradient(circle, #000 1px, transparent 1px)',
             backgroundSize: '20px 20px'
           }} />
@@ -394,7 +475,7 @@ function CertPreview({
     if (decorations.pattern === 'lines') {
       return (
         <div className="absolute inset-0 pointer-events-none opacity-5">
-          <div className="absolute inset-0" style={{ 
+          <div className="absolute inset-0" style={{
             backgroundImage: 'repeating-linear-gradient(45deg, #000 0px, #000 1px, transparent 1px, transparent 20px)'
           }} />
         </div>
@@ -415,11 +496,11 @@ function CertPreview({
   return (
     <div
       className="relative w-full overflow-hidden"
-      style={{ 
+      style={{
         background: `linear-gradient(135deg, ${colors.background[0]}, ${colors.background[1]})`,
         fontFamily: fonts.title,
         aspectRatio: "1.414",
-        minHeight: "260px" 
+        minHeight: "260px"
       }}
       dir="rtl"
     >
@@ -451,12 +532,12 @@ function CertPreview({
       {/* الزوايا */}
       {decorations.corners && (
         <>
-          {([["top-2 right-2","0"],["top-2 left-2","90deg"],["bottom-2 left-2","180deg"],["bottom-2 right-2","270deg"]] as const).map(([cls, r]) => (
+          {([["top-2 right-2", "0"], ["top-2 left-2", "90deg"], ["bottom-2 left-2", "180deg"], ["bottom-2 right-2", "270deg"]] as const).map(([cls, r]) => (
             <div key={r} className={`absolute ${cls} w-14 h-14`} style={{ transform: `rotate(${r})` }}>
               <svg viewBox="0 0 56 56" fill="none">
-                <path d="M0 0 L56 0 L0 56 Z" fill={colors.accent} opacity="0.15"/>
-                <circle cx="8" cy="8" r="4" fill={colors.accent}/>
-                <circle cx="8" cy="8" r="2" fill="white" opacity="0.5"/>
+                <path d="M0 0 L56 0 L0 56 Z" fill={colors.accent} opacity="0.15" />
+                <circle cx="8" cy="8" r="4" fill={colors.accent} />
+                <circle cx="8" cy="8" r="2" fill="white" opacity="0.5" />
               </svg>
             </div>
           ))}
@@ -471,60 +552,59 @@ function CertPreview({
       )}
 
       {/* المحتوى */}
-      <div className={`absolute inset-8 flex flex-col items-center justify-center text-center gap-1.5 ${
-        style === 'modern' ? 'p-4' : ''
-      }`}>
+      <div className={`absolute inset-8 flex flex-col items-center justify-center text-center gap-1.5 ${style === 'modern' ? 'p-4' : ''
+        }`}>
         {template.hasImage && (
           <div style={{ color: colors.secondary, fontFamily: fonts.arabic, fontSize: "clamp(0.6rem,1.6vw,0.85rem)" }}>
             بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ
           </div>
         )}
-        
+
         <div className="font-bold" style={{ color: colors.primary, fontSize: "clamp(0.85rem,2.2vw,1.3rem)" }}>
-          شهادة تقدير 
+          شهادة تقدير
         </div>
-        
+
         <div className="flex items-center gap-2 w-36">
-          <div className="flex-1 h-px" style={{ background: colors.accent }}/>
-          <div className={`w-1.5 h-1.5 rounded-full ${style === 'modern' ? 'w-2 h-2' : ''}`} style={{ background: colors.accent }}/>
-          <div className="flex-1 h-px" style={{ background: colors.accent }}/>
+          <div className="flex-1 h-px" style={{ background: colors.accent }} />
+          <div className={`w-1.5 h-1.5 rounded-full ${style === 'modern' ? 'w-2 h-2' : ''}`} style={{ background: colors.accent }} />
+          <div className="flex-1 h-px" style={{ background: colors.accent }} />
         </div>
-        
+
         <div style={{ color: colors.text, fontFamily: fonts.body, fontSize: "clamp(0.5rem,1.2vw,0.75rem)" }}>
           يُشهد بأن الطالب / الطالبة
         </div>
-        
-        <div 
+
+        <div
           className="font-bold px-4 py-1 rounded-lg"
-          style={{ 
-            color: colors.primary, 
-            background: colors.primary + '10', 
+          style={{
+            color: colors.primary,
+            background: colors.primary + '10',
             border: `1px solid ${colors.primary}30`,
-            fontSize: "clamp(0.75rem,1.8vw,1.1rem)" 
+            fontSize: "clamp(0.75rem,1.8vw,1.1rem)"
           }}
         >
           {studentName || "اسم الطالب"}
         </div>
-        
+
         <div style={{ color: colors.text, fontFamily: fonts.body, fontSize: "clamp(0.5rem,1.2vw,0.75rem)" }}>
           قد أتمّ حفظ سورة
         </div>
-        
+
         <div className="font-bold" style={{ color: colors.secondary, fontFamily: fonts.arabic, fontSize: "clamp(0.7rem,1.6vw,1rem)" }}>
           {surahName}
         </div>
-        
-        <div 
+
+        <div
           className={`font-bold px-3 py-0.5 rounded-full ${style === 'modern' ? 'shadow-md' : ''}`}
-          style={{ 
-            background: colors.accent, 
+          style={{
+            background: colors.accent,
             color: style === 'royal' ? '#FFF' : '#2C1810',
-            fontSize: "clamp(0.6rem,1.4vw,0.85rem)" 
+            fontSize: "clamp(0.6rem,1.4vw,0.85rem)"
           }}
         >
           {level}
         </div>
-        
+
         <div className="flex items-center justify-between w-full mt-1" style={{ color: colors.text, fontFamily: fonts.body, fontSize: "clamp(0.45rem,1vw,0.65rem)" }}>
           <div className="text-center">
             <div>المعلم</div>
@@ -546,13 +626,13 @@ function CertPreview({
 }
 
 // اختيار القالب
-function TemplateSelector({ 
-  templates, 
-  selectedId, 
-  onSelect 
-}: { 
-  templates: Template[]; 
-  selectedId: string; 
+function TemplateSelector({
+  templates,
+  selectedId,
+  onSelect
+}: {
+  templates: Template[];
+  selectedId: string;
   onSelect: (id: string) => void;
 }) {
   return (
@@ -560,7 +640,7 @@ function TemplateSelector({
       <label className="text-sm font-medium block" style={{ fontFamily: "Cairo, sans-serif", color: "#2C1810" }}>
         اختر قالب الشهادة
       </label>
-      
+
       <div className="grid grid-cols-2 gap-2">
         {templates.map((template) => (
           <motion.button
@@ -568,9 +648,8 @@ function TemplateSelector({
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
             onClick={() => onSelect(template.id)}
-            className={`p-2 rounded-xl border-2 transition-all text-center ${
-              selectedId === template.id ? "border-primary bg-primary/5 shadow-md" : "border-border hover:border-primary/30"
-            }`}
+            className={`p-2 rounded-xl border-2 transition-all text-center ${selectedId === template.id ? "border-primary bg-primary/5 shadow-md" : "border-border hover:border-primary/30"
+              }`}
           >
             <div className="flex items-center justify-center gap-1.5 text-xs">
               <span className="text-base">{template.icon}</span>
@@ -583,9 +662,7 @@ function TemplateSelector({
                 <div key={i} className="w-3 h-3 rounded-full border border-gray-200" style={{ background: color }} />
               ))}
             </div>
-            <div className="text-[0.5rem] text-gray-400 mt-0.5" style={{ fontFamily: "Cairo, sans-serif" }}>
-              {template.hasImage ? '📷 مع صورة' : '📝 بدون صورة'}
-            </div>
+
           </motion.button>
         ))}
       </div>
@@ -603,7 +680,19 @@ export default function Certificate() {
   const [selectedTemplateId, setSelectedTemplateId] = useState(TEMPLATES[0].id);
   const [customImage, setCustomImage] = useState<string | null>(null);
   const [showImageUpload, setShowImageUpload] = useState(false);
+  const [showPreviewModal, setShowPreviewModal] = useState(false);
   const [downloading, setDownloading] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+
+  // التحقق من حجم الشاشة
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   const selectedTemplate = TEMPLATES.find(t => t.id === selectedTemplateId) || TEMPLATES[0];
   const today = new Date().toLocaleDateString("ar-EG", { year: "numeric", month: "long", day: "numeric" });
@@ -642,24 +731,24 @@ export default function Certificate() {
     if (decorations.borders) {
       ctx.strokeStyle = colors.border;
       ctx.lineWidth = style === 'modern' ? 6 : 10;
-      ctx.strokeRect(16, 16, W-32, H-32);
+      ctx.strokeRect(16, 16, W - 32, H - 32);
       ctx.strokeStyle = colors.secondary;
       ctx.lineWidth = style === 'modern' ? 2 : 3;
-      ctx.strokeRect(34, 34, W-68, H-68);
+      ctx.strokeRect(34, 34, W - 68, H - 68);
     }
 
     // زوايا
     if (decorations.corners) {
       const cornerSize = style === 'royal' ? 20 : 10;
-      [[cornerSize, cornerSize],[W-cornerSize, cornerSize],[cornerSize, H-cornerSize],[W-cornerSize, H-cornerSize]].forEach(([x,y]) => {
+      [[cornerSize, cornerSize], [W - cornerSize, cornerSize], [cornerSize, H - cornerSize], [W - cornerSize, H - cornerSize]].forEach(([x, y]) => {
         ctx.fillStyle = colors.accent;
         ctx.beginPath();
-        ctx.arc(x, y, cornerSize, 0, Math.PI*2);
+        ctx.arc(x, y, cornerSize, 0, Math.PI * 2);
         ctx.fill();
         ctx.fillStyle = 'white';
         ctx.globalAlpha = 0.3;
         ctx.beginPath();
-        ctx.arc(x, y, cornerSize/2, 0, Math.PI*2);
+        ctx.arc(x, y, cornerSize / 2, 0, Math.PI * 2);
         ctx.fill();
         ctx.globalAlpha = 1;
       });
@@ -678,7 +767,7 @@ export default function Certificate() {
         const imgX = 60, imgY = 60;
         ctx.save();
         ctx.beginPath();
-        ctx.arc(imgX + imgSize/2, imgY + imgSize/2, imgSize/2, 0, Math.PI * 2);
+        ctx.arc(imgX + imgSize / 2, imgY + imgSize / 2, imgSize / 2, 0, Math.PI * 2);
         ctx.closePath();
         ctx.clip();
         ctx.drawImage(img, imgX, imgY, imgSize, imgSize);
@@ -687,9 +776,9 @@ export default function Certificate() {
         ctx.strokeStyle = colors.accent;
         ctx.lineWidth = 3;
         ctx.beginPath();
-        ctx.arc(imgX + imgSize/2, imgY + imgSize/2, imgSize/2, 0, Math.PI * 2);
+        ctx.arc(imgX + imgSize / 2, imgY + imgSize / 2, imgSize / 2, 0, Math.PI * 2);
         ctx.stroke();
-      } catch(e) {
+      } catch (e) {
         // إذا فشل تحميل الصورة
       }
     } else if (selectedTemplate.hasImage) {
@@ -698,13 +787,13 @@ export default function Certificate() {
       const imgX = 80, imgY = 80;
       ctx.fillStyle = colors.accent + '20';
       ctx.beginPath();
-      ctx.arc(imgX + imgSize/2, imgY + imgSize/2, imgSize/2, 0, Math.PI*2);
+      ctx.arc(imgX + imgSize / 2, imgY + imgSize / 2, imgSize / 2, 0, Math.PI * 2);
       ctx.fill();
       ctx.fillStyle = colors.accent;
       ctx.font = "60px serif";
       ctx.textAlign = "center";
       ctx.textBaseline = "middle";
-      ctx.fillText("📖", imgX + imgSize/2, imgY + imgSize/2 + 5);
+      ctx.fillText("📖", imgX + imgSize / 2, imgY + imgSize / 2 + 5);
     }
 
     // النصوص
@@ -716,32 +805,32 @@ export default function Certificate() {
     if (selectedTemplate.hasImage || customImage) {
       ctx.fillStyle = colors.secondary;
       ctx.font = `38px "${fonts.arabic}"`;
-      ctx.fillText("بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ", W/2, 130);
+      ctx.fillText("بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ", W / 2, 130);
       yOffset = 20;
     }
 
     ctx.fillStyle = colors.primary;
     ctx.font = `bold ${style === 'royal' ? '78px' : '68px'} "${fonts.title}"`;
-    ctx.fillText("شهادة تقدير ", W/2, 190 + yOffset);
+    ctx.fillText("شهادة تقدير ", W / 2, 190 + yOffset);
 
     // خط فاصل
     ctx.strokeStyle = colors.accent;
     ctx.lineWidth = style === 'modern' ? 1 : 2;
     ctx.beginPath();
-    ctx.moveTo(W/2-220, 230 + yOffset);
-    ctx.lineTo(W/2+220, 230 + yOffset);
+    ctx.moveTo(W / 2 - 220, 230 + yOffset);
+    ctx.lineTo(W / 2 + 220, 230 + yOffset);
     ctx.stroke();
     ctx.fillStyle = colors.accent;
     ctx.beginPath();
-    ctx.arc(W/2, 230 + yOffset, style === 'modern' ? 4 : 6, 0, Math.PI*2);
+    ctx.arc(W / 2, 230 + yOffset, style === 'modern' ? 4 : 6, 0, Math.PI * 2);
     ctx.fill();
 
     ctx.fillStyle = colors.text;
     ctx.font = `36px "${fonts.body}"`;
-    ctx.fillText("يُشهد بأن الطالب / الطالبة", W/2, 300 + yOffset);
+    ctx.fillText("يُشهد بأن الطالب / الطالبة", W / 2, 300 + yOffset);
 
     // اسم الطالب
-    roundRectPath(ctx, W/2-260, 320 + yOffset, 520, 72, 14);
+    roundRectPath(ctx, W / 2 - 260, 320 + yOffset, 520, 72, 14);
     ctx.fillStyle = colors.primary + '10';
     ctx.fill();
     ctx.strokeStyle = colors.primary + '30';
@@ -749,50 +838,50 @@ export default function Certificate() {
     ctx.stroke();
     ctx.fillStyle = colors.primary;
     ctx.font = `bold 56px "${fonts.title}"`;
-    ctx.fillText(studentName || "اسم الطالب", W/2, 377 + yOffset);
+    ctx.fillText(studentName || "اسم الطالب", W / 2, 377 + yOffset);
 
     ctx.fillStyle = colors.text;
     ctx.font = `36px "${fonts.body}"`;
-    ctx.fillText("قد أتمّ حفظ سورة", W/2, 470 + yOffset);
+    ctx.fillText("قد أتمّ حفظ سورة", W / 2, 470 + yOffset);
 
     ctx.fillStyle = colors.secondary;
     ctx.font = `bold 58px "${fonts.arabic}"`;
-    ctx.fillText(surahName, W/2, 550 + yOffset);
+    ctx.fillText(surahName, W / 2, 550 + yOffset);
 
     ctx.fillStyle = colors.text;
     ctx.font = `34px "${fonts.body}"`;
-    ctx.fillText("وأجاد في التلاوة بتقدير", W/2, 620 + yOffset);
+    ctx.fillText("وأجاد في التلاوة بتقدير", W / 2, 620 + yOffset);
 
     // مستوى التقدير
-    roundRectPath(ctx, W/2-110, 638 + yOffset, 220, 58, 29);
+    roundRectPath(ctx, W / 2 - 110, 638 + yOffset, 220, 58, 29);
     ctx.fillStyle = colors.accent;
     ctx.fill();
     ctx.fillStyle = style === 'royal' ? '#FFF' : '#2C1810';
     ctx.font = `bold 38px "${fonts.body}"`;
-    ctx.fillText(level, W/2, 678 + yOffset);
+    ctx.fillText(level, W / 2, 678 + yOffset);
 
     // خط فاصل سفلي
     ctx.strokeStyle = colors.accent + '40';
     ctx.lineWidth = 1.5;
     ctx.beginPath();
-    ctx.moveTo(W/2, 780 + yOffset);
-    ctx.lineTo(W/2, 890 + yOffset);
+    ctx.moveTo(W / 2, 780 + yOffset);
+    ctx.lineTo(W / 2, 890 + yOffset);
     ctx.stroke();
 
     // المعلم والتاريخ
     ctx.fillStyle = colors.text;
     ctx.font = `28px "${fonts.body}"`;
-    ctx.fillText("المعلم / المعلمة", W/2-220, 810 + yOffset);
+    ctx.fillText("المعلم / المعلمة", W / 2 - 220, 810 + yOffset);
     ctx.fillStyle = colors.primary;
     ctx.font = `bold 38px "${fonts.title}"`;
-    ctx.fillText(teacherName || "اسم المعلم", W/2-220, 860 + yOffset);
+    ctx.fillText(teacherName || "اسم المعلم", W / 2 - 220, 860 + yOffset);
 
     ctx.fillStyle = colors.text;
     ctx.font = `28px "${fonts.body}"`;
-    ctx.fillText("التاريخ", W/2+220, 810 + yOffset);
+    ctx.fillText("التاريخ", W / 2 + 220, 810 + yOffset);
     ctx.fillStyle = colors.primary;
     ctx.font = `bold 32px "${fonts.body}"`;
-    ctx.fillText(today, W/2+220, 858 + yOffset);
+    ctx.fillText(today, W / 2 + 220, 858 + yOffset);
 
     // تصدير
     cvs.toBlob(blob => {
@@ -808,15 +897,28 @@ export default function Certificate() {
 
   return (
     <div className="p-5 lg:p-8 max-w-6xl mx-auto" dir="rtl">
-      <h2 className="text-2xl font-bold mb-6" style={{ fontFamily: "Cairo, serif", color: "var(--kid-teal)" }}>
+      <h2 className="text-2xl font-bold mb-6" style={{ fontFamily: "Cairo, serif", color: "#5296aa" }}>
         شهادات التقدير - قوالب متعددة
       </h2>
-      
+
       {/* نافذة رفع الصورة */}
       <ImageUploadModal
         isOpen={showImageUpload}
         onClose={() => setShowImageUpload(false)}
         onImageUpload={(imageData) => setCustomImage(imageData)}
+      />
+
+      {/* مودال معاينة الشهادة (يظهر فقط على الموبايل) */}
+      <CertPreviewModal
+        isOpen={isMobile && showPreviewModal}
+        onClose={() => setShowPreviewModal(false)}
+        studentName={studentName}
+        surahName={surahName}
+        teacherName={teacherName}
+        level={level}
+        date={today}
+        template={selectedTemplate}
+        customImage={customImage}
       />
 
       <div className="grid lg:grid-cols-2 gap-8 items-start">
@@ -922,26 +1024,46 @@ export default function Certificate() {
             </div>
           </div>
 
-          <motion.button
-            whileTap={{ scale: 0.97 }}
-            onClick={downloadCertificate}
-            disabled={!studentName || !teacherName || downloading}
-            className="w-full flex items-center justify-center gap-2 py-3 rounded-xl font-semibold text-white disabled:opacity-50 transition-colors"
-            style={{ 
-              background: downloading ? "#7A5C48" : selectedTemplate.colors.primary,
-              fontFamily: "Cairo, sans-serif" 
-            }}
-          >
-            {downloading ? (
-              <><RotateCcw size={18} className="animate-spin" />... جاري التحميل</>
-            ) : (
-              <><Download size={18} /> تحميل الشهادة PNG</>
+          <div className="flex gap-2" style={{flexDirection:"column"}}>
+            {/* زر معاينة (يظهر فقط على الموبايل) */}
+            {isMobile && (
+              <motion.button
+                whileTap={{ scale: 0.97 }}
+                onClick={() => setShowPreviewModal(true)}
+                className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl font-semibold border-2 transition-colors"
+                style={{
+                  borderColor: selectedTemplate.colors.primary,
+                  color: selectedTemplate.colors.primary,
+                  fontFamily: "Cairo, sans-serif"
+                }}
+              >
+                <Eye size={18} />
+                معاينة
+              </motion.button>
             )}
-          </motion.button>
+
+            {/* زر التحميل */}
+            <motion.button
+              whileTap={{ scale: 0.97 }}
+              onClick={downloadCertificate}
+              disabled={!studentName || !teacherName || downloading}
+              className={`${isMobile ? 'flex-1' : 'w-full'} flex items-center justify-center gap-2 py-3 rounded-xl font-semibold text-white disabled:opacity-50 transition-colors`}
+              style={{
+                background: downloading ? "#7A5C48" : selectedTemplate.colors.primary,
+                fontFamily: "Cairo, sans-serif"
+              }}
+            >
+              {downloading ? (
+                <><RotateCcw size={18} className="animate-spin" />... جاري التحميل</>
+              ) : (
+                <><Download size={18} /> تحميل الشهادة PNG</>
+              )}
+            </motion.button>
+          </div>
         </div>
 
-        {/* المعاينة */}
-        <div>
+        {/* المعاينة - تختفي على الموبايل وتظهر في المودال */}
+        <div className={`${isMobile ? 'hidden' : 'block'}`}>
           <p className="font-bold text-base mb-3" style={{ fontFamily: "Cairo, serif", color: "#2C1810" }}>
             معاينة الشهادة
           </p>
