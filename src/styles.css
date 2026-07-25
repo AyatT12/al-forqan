@@ -59,7 +59,7 @@
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
-  --color-kid-teal: var(--kid-teal);
+  --color-kid-teal: var(--kid-teal)
   --color-kid-coral: var(--kid-coral);
   --color-kid-sun: var(--kid-sun);
   --color-kid-sky: var(--kid-sky);
@@ -74,12 +74,12 @@
   --radius: 1.25rem;
 
   /* Kid-friendly palette */
-  --kid-teal:  oklch(0.72 0.13 195);
-  --kid-coral: oklch(0.74 0.16 30);
-  --kid-sun:   oklch(0.86 0.16 90);
-  --kid-sky:   oklch(0.87 0.08 230);
-  --kid-grape: oklch(0.65 0.19 305);
-  --kid-mint:  oklch(0.87 0.11 155);
+  --kid-teal:  oklch(58.287% 0.09886 194.821);
+  --kid-coral: oklch(66.279% 0.2176 31.768);
+  --kid-sun:   oklch(84.742% 0.16547 87.857);
+  --kid-sky:   oklch(74.204% 0.14015 235.536);
+  --kid-grape: oklch(44.602% 0.07615 194.807);
+  --kid-mint:  oklch(79.108% 0.16205 152.298);
 
   --background: rgb(248, 245, 240);
   --foreground: oklch(0.24 0.06 275);
@@ -87,7 +87,7 @@
   --card-foreground: oklch(0.24 0.06 275);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.24 0.06 275);
-  --primary: var(--kid-teal);
+  --primary: var(--kid-teal)
   --primary-foreground: oklch(0.18 0.03 275);
   --secondary: var(--kid-coral);
   --secondary-foreground: oklch(1 0 0);
@@ -99,20 +99,20 @@
   --destructive-foreground: oklch(1 0 0);
   --border: oklch(0.88 0.04 90);
   --input: oklch(0.94 0.03 90);
-  --ring: var(--kid-teal);
-  --chart-1: var(--kid-teal);
+  --ring: var(--kid-teal)
+  --chart-1: var(--kid-teal)
   --chart-2: var(--kid-coral);
   --chart-3: var(--kid-sun);
   --chart-4: var(--kid-grape);
   --chart-5: var(--kid-mint);
   --sidebar: oklch(0.98 0.02 90);
   --sidebar-foreground: oklch(0.24 0.06 275);
-  --sidebar-primary: var(--kid-teal);
+  --sidebar-primary: var(--kid-teal)
   --sidebar-primary-foreground: oklch(1 0 0);
   --sidebar-accent: oklch(0.94 0.03 90);
   --sidebar-accent-foreground: oklch(0.24 0.06 275);
   --sidebar-border: oklch(0.88 0.04 90);
-  --sidebar-ring: var(--kid-teal);
+  --sidebar-ring: var(--kid-teal)
 
   --input-background: oklch(0.96 0.02 90);
   --switch-background: oklch(0.88 0.04 90);
@@ -128,7 +128,7 @@
   --card-foreground: oklch(0.984 0.003 247.858);
   --popover: oklch(0.26 0.06 275);
   --popover-foreground: oklch(0.984 0.003 247.858);
-  --primary: var(--kid-teal);
+  --primary: var(--kid-teal)
   --primary-foreground: oklch(0.18 0.03 275);
   --secondary: var(--kid-coral);
   --secondary-foreground: oklch(0.984 0.003 247.858);
@@ -140,7 +140,7 @@
   --destructive-foreground: oklch(0.984 0.003 247.858);
   --border: oklch(1 0 0 / 10%);
   --input: oklch(1 0 0 / 15%);
-  --ring: var(--kid-teal);
+  --ring: var(--kid-teal)
   --chart-1: oklch(0.488 0.243 264.376);
   --chart-2: oklch(0.696 0.17 162.48);
   --chart-3: oklch(0.769 0.188 70.08);
@@ -153,7 +153,7 @@
   --sidebar-accent: oklch(0.30 0.05 275);
   --sidebar-accent-foreground: oklch(0.984 0.003 247.858);
   --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: var(--kid-teal);
+  --sidebar-ring: var(--kid-teal)
 }
 
 @layer base {
@@ -186,7 +186,7 @@
 
 @utility bg-kid-page {
   background:
-    radial-gradient(circle at 10% 0%, color-mix(in oklab, var(--kid-sun) 25%, transparent) 0%, transparent 40%),
+    radial-gradient(circle at 10% 0%, color-mix(in oklab, var(--kid-teal) 25%, transparent) 0%, transparent 40%),
     radial-gradient(circle at 90% 10%, color-mix(in oklab, var(--kid-coral) 25%, transparent) 0%, transparent 40%),
     var(--background);
 }
@@ -201,25 +201,21 @@
 }
 
 ::-webkit-scrollbar {
-  width: 7px;
-  height: 7px;
-  border-radius: 7px;
-
+  width: 5px;
+  height: 5px;
 }
 
 /* Track */
 ::-webkit-scrollbar-track {
   background: #ffffff;
-  border-radius: 7px;
 }
 
 /* Handle */
 ::-webkit-scrollbar-thumb {
-  background: #ac9ae8;
-  border-radius: 7px;
+  background: var(--kid-teal)
 }
 
 /* Handle on hover */
 ::-webkit-scrollbar-thumb:hover {
-  background: #896fdd;
+  background: oklch(53.105% 0.09027 194.816);
 }
