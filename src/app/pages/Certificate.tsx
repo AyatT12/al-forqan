@@ -10,6 +10,8 @@ interface Template {
   id: string;
   name: string;
   hasImage: boolean;
+  certificateImage?: string;
+  artworkLayout?: "pink" | "flowers";
   icon: React.ReactNode;
   colors: {
     primary: string;
@@ -204,7 +206,76 @@ const TEMPLATES: Template[] = [
     },
     style: 'elegant',
   },
+  {
+    id: "memorization-pink",
+    name: "شكر وتقدير - وردي",
+    hasImage: false,
+    certificateImage: "/certificates/memorization-pink.jpeg",
+    artworkLayout: "pink",
+    icon: <Heart size={16} />,
+    colors: {
+      primary: "#9A4761",
+      secondary: "#A83F5C",
+      accent: "#E5A7B6",
+      text: "#5C4141",
+      background: ["#FCEEF0", "#FCEEF0"],
+      border: "#A83F5C",
+      highlight: "#A83F5C",
+    },
+    fonts: {
+      title: "Cairo, serif",
+      body: "Cairo, sans-serif",
+      arabic: "Noto Naskh Arabic, serif",
+    },
+    decorations: {
+      corners: false,
+      borders: false,
+      watermark: false,
+      pattern: 'none',
+    },
+    style: 'elegant',
+  },
+  {
+    id: "memorization-flowers",
+    name: "شكر وتقدير - ورود",
+    hasImage: false,
+    certificateImage: "/certificates/certifcate1.jpeg",
+    artworkLayout: "flowers",
+    icon: <Award size={16} />,
+    colors: {
+      primary: "#9D1230",
+      secondary: "#6D544D",
+      accent: "#C98280",
+      text: "#4E4741",
+      background: ["#FFFFFF", "#FFFFFF"],
+      border: "#9D1230",
+      highlight: "#9D1230",
+    },
+    fonts: {
+      title: "Cairo, serif",
+      body: "Cairo, sans-serif",
+      arabic: "Noto Naskh Arabic, serif",
+    },
+    decorations: {
+      corners: false,
+      borders: false,
+      watermark: false,
+      pattern: 'none',
+    },
+    style: 'elegant',
+  },
 ];
+
+const PINK_CERTIFICATE_TEXT_BOXES = {
+  studentName: { left: 0.22, right: 0.45, top: 0.37, height: 0.05 },
+  memorization: { left: 0.02, right: 0.24, top: 0.505, height: 0.04 },
+  date: { left: 0.02, right: 0.23, top: 0.905, height: 0.03 },
+};
+
+const MEMORIZATION_TEXT_BOXES = {
+  pink: PINK_CERTIFICATE_TEXT_BOXES.memorization,
+  flowers: { left: 0.3, right: 0.2, top: 0.393, height: 0.04 },
+};
 
 // ─── COMPONENTS ──────────────────────────────────────
 
@@ -363,7 +434,8 @@ function CertPreviewModal({
   isOpen,
   onClose,
   studentName,
-  surahName,
+  memorizationName,
+  memorizationType,
   teacherName,
   level,
   date,
@@ -373,7 +445,8 @@ function CertPreviewModal({
   isOpen: boolean;
   onClose: () => void;
   studentName: string;
-  surahName: string;
+  memorizationName: string;
+  memorizationType: "surah" | "juz";
   teacherName: string;
   level: string;
   date: string;
@@ -426,7 +499,8 @@ function CertPreviewModal({
         <div className="rounded-2xl overflow-hidden shadow-2xl border border-white/10">
           <CertPreview
             studentName={studentName}
-            surahName={surahName}
+            memorizationName={memorizationName}
+            memorizationType={memorizationType}
             teacherName={teacherName}
             level={level}
             date={date}
@@ -443,7 +517,8 @@ function CertPreviewModal({
 // معاينة الشهادة
 function CertPreview({
   studentName,
-  surahName,
+  memorizationName,
+  memorizationType,
   teacherName,
   level,
   date,
@@ -451,7 +526,8 @@ function CertPreview({
   customImage
 }: {
   studentName: string;
-  surahName: string;
+  memorizationName: string;
+  memorizationType: "surah" | "juz";
   teacherName: string;
   level: string;
   date: string;
@@ -459,6 +535,73 @@ function CertPreview({
   customImage?: string | null;
 }) {
   const { colors, fonts, decorations, style } = template;
+  const memorizationLabel = memorizationType === "surah" ? "سورة" : "";
+
+  if (template.certificateImage) {
+    const isPink = template.artworkLayout === "pink";
+    const memorizationBox = MEMORIZATION_TEXT_BOXES[isPink ? "pink" : "flowers"];
+    const studentNameBox = isPink
+      ? PINK_CERTIFICATE_TEXT_BOXES.studentName
+      : { left: 0.24, right: 0.19, top: 0.28, height: 0.05 };
+
+    return (
+      <div
+        className="relative w-full overflow-hidden aspect-square bg-white"
+        style={{ containerType: "inline-size" }}
+        dir="rtl"
+      >
+        <img
+          src={template.certificateImage}
+          alt={template.name}
+          className="absolute inset-0 w-full h-full object-cover"
+        />
+        <div
+          className="absolute flex items-center justify-center overflow-hidden font-bold text-center"
+          style={{
+            left: `${studentNameBox.left * 100}%`,
+            right: `${studentNameBox.right * 100}%`,
+            top: `${studentNameBox.top * 100}%`,
+            height: `${studentNameBox.height * 100}%`,
+            color: colors.primary,
+            fontFamily: fonts.title,
+            fontSize: "3.8cqw",
+          }}
+        >
+          {studentName || "اسم الطالبة"}
+        </div>
+        <div
+          className="absolute flex items-center justify-center overflow-hidden font-bold text-center"
+          style={{
+            left: `${memorizationBox.left * 100}%`,
+            right: `${memorizationBox.right * 100}%`,
+            top: `${memorizationBox.top * 100}%`,
+            height: `${memorizationBox.height * 100}%`,
+            color: colors.primary,
+            fontFamily: fonts.arabic,
+            fontSize: "3.3cqw",
+          }}
+        >
+          {memorizationType === "juz" ? memorizationName : `${memorizationLabel} ${memorizationName}`}
+        </div>
+        {isPink && (
+          <div
+            className="absolute flex items-center justify-center font-bold text-center"
+            style={{
+              left: `${PINK_CERTIFICATE_TEXT_BOXES.date.left * 100}%`,
+              right: `${PINK_CERTIFICATE_TEXT_BOXES.date.right * 100}%`,
+              top: `${PINK_CERTIFICATE_TEXT_BOXES.date.top * 100}%`,
+              height: `${PINK_CERTIFICATE_TEXT_BOXES.date.height * 100}%`,
+              color: colors.text,
+              fontFamily: fonts.body,
+              fontSize: "2.3cqw",
+            }}
+          >
+            {date}
+          </div>
+        )}
+      </div>
+    );
+  }
 
   // رسم النقوش
   const renderPattern = () => {
@@ -587,11 +730,11 @@ function CertPreview({
         </div>
 
         <div style={{ color: colors.text, fontFamily: fonts.body, fontSize: "clamp(0.5rem,1.2vw,0.75rem)" }}>
-          قد أتمّ حفظ سورة
+          قد أتمّ حفظ {memorizationType === "surah" ? "سورة" : ""}
         </div>
 
         <div className="font-bold" style={{ color: colors.secondary, fontFamily: fonts.arabic, fontSize: "clamp(0.7rem,1.6vw,1rem)" }}>
-          {surahName}
+          {memorizationName}
         </div>
 
         <div
@@ -652,7 +795,15 @@ function TemplateSelector({
               }`}
           >
             <div className="flex items-center justify-center gap-1.5 text-xs">
-              <span className="text-base">{template.icon}</span>
+              {template.certificateImage ? (
+                <img
+                  src={template.certificateImage}
+                  alt=""
+                  className="h-8 w-8 rounded-md object-cover"
+                />
+              ) : (
+                <span className="text-base">{template.icon}</span>
+              )}
               <span style={{ fontFamily: "Cairo, sans-serif", color: "#2C1810", fontSize: '0.7rem' }}>
                 {template.name}
               </span>
@@ -674,7 +825,8 @@ function TemplateSelector({
 
 export default function Certificate() {
   const [studentName, setStudentName] = useState("");
-  const [surahName, setSurahName] = useState("الفاتحة");
+  const [memorizationType, setMemorizationType] = useState<"surah" | "juz">("surah");
+  const [memorizationName, setMemorizationName] = useState("الفاتحة");
   const [teacherName, setTeacherName] = useState("");
   const [level, setLevel] = useState("ممتاز");
   const [selectedTemplateId, setSelectedTemplateId] = useState(TEMPLATES[0].id);
@@ -682,6 +834,7 @@ export default function Certificate() {
   const [showImageUpload, setShowImageUpload] = useState(false);
   const [showPreviewModal, setShowPreviewModal] = useState(false);
   const [downloading, setDownloading] = useState(false);
+  const [downloadError, setDownloadError] = useState("");
   const [isMobile, setIsMobile] = useState(false);
 
   // التحقق من حجم الشاشة
@@ -699,7 +852,100 @@ export default function Certificate() {
 
   const downloadCertificate = async () => {
     setDownloading(true);
+    setDownloadError("");
     await document.fonts.ready;
+    if (selectedTemplate.certificateImage) {
+      try {
+        const image = new Image();
+        image.src = selectedTemplate.certificateImage;
+        await new Promise<void>((resolve, reject) => {
+          image.onload = () => resolve();
+          image.onerror = () => reject(new Error("تعذر تحميل صورة الشهادة"));
+        });
+
+        const size = 1414;
+        const canvas = document.createElement("canvas");
+        canvas.width = size;
+        canvas.height = size;
+        const context = canvas.getContext("2d");
+        if (!context) throw new Error("تعذر تجهيز صورة الشهادة");
+
+        context.drawImage(image, 0, 0, size, size);
+        context.direction = "rtl";
+        context.textAlign = "center";
+        context.textBaseline = "middle";
+        const isPink = selectedTemplate.artworkLayout === "pink";
+        const nameBox = isPink
+          ? PINK_CERTIFICATE_TEXT_BOXES.studentName
+          : { left: 0.24, right: 0.19, top: 0.28, height: 0.05 };
+        const memorizationBox = MEMORIZATION_TEXT_BOXES[isPink ? "pink" : "flowers"];
+        const drawOverlayText = (
+          text: string,
+          box: { left: number; right: number; top: number; height: number },
+          fontSize: number,
+          fontFamily: string,
+          color: string
+        ) => {
+          const boxLeft = size * box.left;
+          const boxTop = size * box.top;
+          const boxWidth = size * (1 - box.left - box.right);
+          context.save();
+          context.beginPath();
+          context.rect(boxLeft, boxTop, boxWidth, size * box.height);
+          context.clip();
+          context.fillStyle = color;
+          context.font = `700 ${size * fontSize}px ${fontFamily}`;
+          context.textAlign = "center";
+          context.textBaseline = "middle";
+          context.direction = "rtl";
+          context.fillText(
+            text,
+            boxLeft + boxWidth / 2,
+            boxTop + (size * box.height) / 2
+          );
+          context.restore();
+        };
+
+        drawOverlayText(
+          studentName,
+          nameBox,
+          0.038,
+          selectedTemplate.fonts.title,
+          selectedTemplate.colors.primary
+        );
+        drawOverlayText(
+          memorizationType === "surah" ? `سورة ${memorizationName}` : memorizationName,
+          memorizationBox,
+          0.033,
+          selectedTemplate.fonts.arabic,
+          selectedTemplate.colors.primary
+        );
+        if (selectedTemplate.artworkLayout === "pink") {
+          drawOverlayText(
+            today,
+            PINK_CERTIFICATE_TEXT_BOXES.date,
+            0.023,
+            selectedTemplate.fonts.body,
+            selectedTemplate.colors.text
+          );
+        }
+
+        const blob = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, "image/png"));
+        if (!blob) throw new Error("تعذر إنشاء ملف الشهادة");
+
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = `شهادة-${studentName || "الطالبة"}.png`;
+        link.click();
+        setTimeout(() => URL.revokeObjectURL(url), 1000);
+      } catch (error) {
+        setDownloadError("تعذر إنشاء الشهادة. يرجى المحاولة مرة أخرى.");
+      } finally {
+        setDownloading(false);
+      }
+      return;
+    }
     const W = 1414, H = 1000;
     const cvs = document.createElement("canvas");
     cvs.width = W; cvs.height = H;
@@ -842,11 +1088,11 @@ export default function Certificate() {
 
     ctx.fillStyle = colors.text;
     ctx.font = `36px "${fonts.body}"`;
-    ctx.fillText("قد أتمّ حفظ سورة", W / 2, 470 + yOffset);
+    ctx.fillText(`قد أتمّ حفظ ${memorizationType === "surah" ? "سورة" : ""}`, W / 2, 470 + yOffset);
 
     ctx.fillStyle = colors.secondary;
     ctx.font = `bold 58px "${fonts.arabic}"`;
-    ctx.fillText(surahName, W / 2, 550 + yOffset);
+    ctx.fillText(memorizationName, W / 2, 550 + yOffset);
 
     ctx.fillStyle = colors.text;
     ctx.font = `34px "${fonts.body}"`;
@@ -913,7 +1159,8 @@ export default function Certificate() {
         isOpen={isMobile && showPreviewModal}
         onClose={() => setShowPreviewModal(false)}
         studentName={studentName}
-        surahName={surahName}
+        memorizationName={memorizationName}
+        memorizationType={memorizationType}
         teacherName={teacherName}
         level={level}
         date={today}
@@ -987,17 +1234,51 @@ export default function Certificate() {
 
             <div>
               <label className="text-sm font-medium block mb-1.5" style={{ fontFamily: "Cairo, sans-serif", color: "#2C1810" }}>
-                السورة المحفوظة
+                نوع الحفظ
               </label>
-              <select
-                value={surahName}
-                onChange={e => setSurahName(e.target.value)}
-                className="w-full px-4 py-2.5 rounded-xl border border-border bg-background focus:outline-none focus:ring-2 focus:border-primary text-right"
-                style={{ fontFamily: "Cairo, serif", color: "#2C1810" }}
-                dir="rtl"
-              >
-                {SURAHS.map(s => <option key={s.id} value={s.name}>{s.name}</option>)}
-              </select>
+              <div className="grid grid-cols-2 gap-2 mb-3">
+                {([
+                  ["surah", "سورة"],
+                  ["juz", "جزء"],
+                ] as const).map(([type, label]) => (
+                  <button
+                    key={type}
+                    type="button"
+                    onClick={() => {
+                      setMemorizationType(type);
+                      setMemorizationName(type === "surah" ? SURAHS[0].name : "الجزء الأول");
+                    }}
+                    className={`py-2 rounded-xl border transition-colors ${memorizationType === type ? "border-primary bg-primary/5 font-bold" : "border-border"}`}
+                    style={{ fontFamily: "Cairo, sans-serif", color: "#2C1810" }}
+                  >
+                    {label}
+                  </button>
+                ))}
+              </div>
+              <label className="text-sm font-medium block mb-1.5" style={{ fontFamily: "Cairo, sans-serif", color: "#2C1810" }}>
+                {memorizationType === "surah" ? "السورة المحفوظة" : "الجزء المحفوظ"}
+              </label>
+              {memorizationType === "surah" ? (
+                <select
+                  value={memorizationName}
+                  onChange={e => setMemorizationName(e.target.value)}
+                  className="w-full px-4 py-2.5 rounded-xl border border-border bg-background focus:outline-none focus:ring-2 focus:border-primary text-right"
+                  style={{ fontFamily: "Cairo, serif", color: "#2C1810" }}
+                  dir="rtl"
+                >
+                  {SURAHS.map(s => <option key={s.id} value={s.name}>{s.name}</option>)}
+                </select>
+              ) : (
+                <input
+                  type="text"
+                  value={memorizationName}
+                  onChange={e => setMemorizationName(e.target.value)}
+                  placeholder="اكتب اسم الجزء، مثال: الجزء الأول"
+                  className="w-full px-4 py-2.5 rounded-xl border border-border bg-background focus:outline-none focus:ring-2 focus:border-primary text-right"
+                  style={{ fontFamily: "Cairo, serif", color: "#2C1810" }}
+                  dir="rtl"
+                />
+              )}
             </div>
 
             <div>
@@ -1046,7 +1327,7 @@ export default function Certificate() {
             <motion.button
               whileTap={{ scale: 0.97 }}
               onClick={downloadCertificate}
-              disabled={!studentName || !teacherName || downloading}
+              disabled={!studentName || (!selectedTemplate.certificateImage && !teacherName) || downloading}
               className={`${isMobile ? 'flex-1' : 'w-full'} flex items-center justify-center gap-2 py-3 rounded-xl font-semibold text-white disabled:opacity-50 transition-colors`}
               style={{
                 background: downloading ? "#7A5C48" : selectedTemplate.colors.primary,
@@ -1059,6 +1340,11 @@ export default function Certificate() {
                 <><Download size={18} /> تحميل الشهادة PNG</>
               )}
             </motion.button>
+            {downloadError && (
+              <p className="text-sm text-red-600 text-center" role="alert" style={{ fontFamily: "Cairo, sans-serif" }}>
+                {downloadError}
+              </p>
+            )}
           </div>
         </div>
 
@@ -1070,7 +1356,8 @@ export default function Certificate() {
           <div className="rounded-2xl overflow-hidden border border-border shadow-sm transition-all">
             <CertPreview
               studentName={studentName}
-              surahName={surahName}
+              memorizationName={memorizationName}
+              memorizationType={memorizationType}
               teacherName={teacherName}
               level={level}
               date={today}
